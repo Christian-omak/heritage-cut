@@ -149,7 +149,7 @@ const S = {
 const BARBERS = [
     'Maher',
     'Najem',
-    'Majd',
+    'Majed',
     'Any barber'
 ];
 
