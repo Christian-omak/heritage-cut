@@ -4,8 +4,11 @@ const $ = selector => document.querySelector(selector);
 window.addEventListener('load', () => {
     setTimeout(() => {
         const loader = $('#ld');
+
         if (loader) loader.classList.add('go');
-document.body.classList.add('go');
+
+        // Reveal the main website
+        document.body.classList.add('go');
     }, 500);
 });
 
@@ -20,9 +23,6 @@ if (marquee) {
 
 // SCROLL REVEAL
 const revealElements = document.querySelectorAll('.rv');
-revealElements.forEach(element => {
-    element.classList.add('in');
-});
 
 if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(entries => {
@@ -38,6 +38,15 @@ if ('IntersectionObserver' in window) {
 } else {
     revealElements.forEach(element => element.classList.add('in'));
 }
+
+// GOOGLE RATING COUNTERS
+document.querySelectorAll('[data-n]').forEach(element => {
+    const number = Number(element.dataset.n);
+
+    element.textContent = Number.isInteger(number)
+        ? number
+        : number.toFixed(1);
+});
 
 // BOOKING SYSTEM
 const S = {
@@ -63,6 +72,7 @@ function createChips(selector, options, key) {
 
     options.forEach(option => {
         const button = document.createElement('button');
+
         button.type = 'button';
         button.textContent = option;
 
@@ -94,6 +104,7 @@ const formatDate = date => {
 
 if (dateInput) {
     const today = new Date();
+
     dateInput.min = formatDate(today);
     dateInput.value = formatDate(today);
 }
@@ -112,9 +123,11 @@ function createTimeSlots() {
     for (let minutes = 600; minutes <= 1170; minutes += 30) {
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
+
         const time = `${pad(hours)}:${pad(mins)}`;
 
         const button = document.createElement('button');
+
         button.type = 'button';
         button.textContent = time;
 
@@ -149,6 +162,7 @@ if (dateInput) {
 // BOOKING SUMMARY
 function updateSummary() {
     const message = $('#bm');
+
     if (!message || !dateInput) return;
 
     if (S.barber && S.service && S.time && dateInput.value) {
@@ -225,10 +239,9 @@ if (bookingButton) {
             document.querySelectorAll('#cb button, #cs button, #ct button')
                 .forEach(button => button.classList.remove('on'));
 
-            createTimeSlots();
-
         } catch (error) {
             console.error('Booking error:', error);
+
             message.textContent =
                 'Could not save your booking. Please try again.';
         } finally {
@@ -237,11 +250,3 @@ if (bookingButton) {
         }
     });
 }
-// GOOGLE RATING COUNTERS
-document.querySelectorAll('[data-n]').forEach(element => {
-    const number = Number(element.dataset.n);
-
-    element.textContent = Number.isInteger(number)
-        ? number
-        : number.toFixed(1);
-});
