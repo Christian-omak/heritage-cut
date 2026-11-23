@@ -22,7 +22,7 @@ const marquee = $('#mq');
 
 if (marquee) {
     marquee.innerHTML = (
-        'Fades<span>✂</span>Tapers<span>✂</span>Beard sculpting<span>✂</span>Hot towel finish<span>✂</span>'
+        'Haircuts<span>✂</span>Beard grooming<span>✂</span>Precision styling<span>✂</span>Classic cuts<span>✂</span>'
     ).repeat(8);
 }
 
@@ -69,34 +69,51 @@ const S = {
     time: ''
 };
 
-const BARBERS = ['Maher', 'Najem', 'Nayef', 'Any barber'];
-
-const SERVICES = [
-    'Signature Haircut',
-    'Fade or Taper',
-    'Beard Sculpting',
-    'Cut and Beard'
+const BARBERS = [
+    'Maher',
+    'Najem',
+    'Majd',
+    'Any barber'
 ];
 
-// Match customer-facing names with admin-assigned names.
+const SERVICES = [
+    'Haircut',
+    'Beard',
+    'Haircut + Beard'
+];
+
+// Match customer-facing barber names with admin names.
 const BARBER_ALIASES = {
     'Maher': ['maher', 'maher nayef'],
     'Najem': ['najem'],
-    'Nayef': ['nayef', 'nayef hussein']
+    'Majd': ['majd']
 };
 
-// Estimated service durations in minutes.
+// ==========================================
+// SERVICE DURATIONS
+// ==========================================
+
 function getDuration(service) {
-    const s = String(service || '').toLowerCase();
+    const s = String(service || '').toLowerCase().trim();
 
-    if (s.includes('cut and beard')) return 60;
+    if (
+        s.includes('haircut + beard') ||
+        s.includes('haircut and beard') ||
+        s.includes('cut and beard')
+    ) {
+        return 45;
+    }
 
-    if (s.includes('fade') || s.includes('taper')) return 45;
-
-    if (s.includes('beard')) return 30;
+    if (s === 'beard' || s.includes('beard')) {
+        return 15;
+    }
 
     return 30;
 }
+
+// ==========================================
+// DATE AND TIME HELPERS
+// ==========================================
 
 function pad(number) {
     return String(number).padStart(2, '0');
@@ -118,7 +135,7 @@ function barberMatches(assignedBarber, requestedBarber) {
         .toLowerCase();
 
     const aliases = BARBER_ALIASES[requestedBarber] || [
-        requestedBarber.toLowerCase()
+        String(requestedBarber || '').toLowerCase()
     ];
 
     return aliases.includes(assigned);
@@ -300,6 +317,7 @@ async function createTimeSlots() {
     const today = formatDate(new Date());
     const now = new Date();
 
+    // Booking slots every 30 minutes.
     for (let minutes = 600; minutes <= 1170; minutes += 30) {
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
@@ -343,6 +361,10 @@ async function createTimeSlots() {
 
     updateSummary();
 }
+
+// ==========================================
+// DATE CHANGE
+// ==========================================
 
 if (dateInput) {
     dateInput.addEventListener('change', createTimeSlots);
@@ -409,7 +431,6 @@ if (bookingButton) {
         bookingButton.textContent = 'Checking availability...';
 
         try {
-            // Check availability again before submitting.
             const latestBookings = await getConfirmedBookings(
                 dateInput.value
             );
@@ -453,11 +474,6 @@ if (bookingButton) {
             ).forEach(button => {
                 button.classList.remove('on');
             });
-
-            document.querySelectorAll('#cb button, #cs button')
-                .forEach(button => {
-                    button.classList.remove('on');
-                });
 
             createTimeSlots();
 
