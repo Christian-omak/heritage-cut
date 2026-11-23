@@ -166,6 +166,48 @@ const BARBER_ALIASES = {
 };
 
 // ==========================================
+// AVAILABILITY INDICATOR STYLES
+// ==========================================
+
+const availabilityStyles = document.createElement('style');
+
+availabilityStyles.textContent = `
+    #cb button {
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    #cb .availability-label {
+        display: block;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: .5px;
+        opacity: .85;
+    }
+
+    #cb .availability-label.available {
+        color: #62cf91;
+    }
+
+    #cb .availability-label.limited {
+        color: #e8bb62;
+    }
+
+    #cb .availability-label.full {
+        color: #ed7777;
+    }
+
+    #cb .availability-label.checking {
+        color: #aaa;
+    }
+`;
+
+document.head.appendChild(availabilityStyles);
+
+// ==========================================
 // SERVICE DURATIONS
 // ==========================================
 
@@ -232,7 +274,20 @@ function createChips(selector, options, key) {
         const button = document.createElement('button');
 
         button.type = 'button';
-        button.textContent = option;
+
+        const name = document.createElement('span');
+        name.textContent = option;
+
+        button.appendChild(name);
+
+        if (key === 'barber' && option !== 'Any barber') {
+            const indicator = document.createElement('small');
+
+            indicator.className = 'availability-label checking';
+            indicator.textContent = 'Checking...';
+
+            button.appendChild(indicator);
+        }
 
         button.addEventListener('click', () => {
             S[key] = option;
@@ -317,6 +372,160 @@ function isBarberBusy(barber, time, duration, bookings) {
             newEnd > existingStart
         );
     });
+}
+
+// ==========================================
+// BARBER AVAILABILITY INDICATORS
+// ==========================================
+
+let indicatorRequest = 0;
+
+async function refreshBarberIndicators() {
+    if (!dateInput) return;
+
+    const requestNumber = ++indicatorRequest;
+
+    const container = $('#cb');
+
+    if (!container) return;
+
+    const buttons = [...container.children];
+
+    buttons.forEach((button, index) => {
+        if (BARBERS[index] === 'Any barber') return;
+
+        const label = button.querySelector('.availability-label');
+
+        if (label) {
+            label.textContent = 'Checking...';
+            label.className = 'availability-label checking';
+        }
+    });
+
+    try {
+        const bookings = await getConfirmedBookings(dateInput.value);
+
+        if (requestNumber !== indicatorRequest) return;
+
+        const selectedDate = dateInput.value;
+        const today = formatDate(new Date());
+        const now = new Date();
+
+        const barberStatuses = [];
+
+        BARBERS.filter(barber => barber !== 'Any barber')
+            .forEach(barber => {
+
+                let availableSlots = 0;
+
+                for (let minutes = 600; minutes <= 1170; minutes += 30) {
+                    const time = `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
+
+                    const alreadyPassed =
+                        selectedDate === today &&
+                        minutes <= now.getHours() * 60 + now.getMinutes() + 15;
+
+                    if (alreadyPassed) continue;
+
+                    if (!isBarberBusy(barber, time, 30, bookings)) {
+                        availableSlots++;
+                    }
+                }
+
+                let status;
+                let label;
+                let className;
+
+                if (availableSlots === 0) {
+                    status = 'Fully booked';
+                    label = 'Fully booked';
+                    className = 'full';
+                } else if (availableSlots <= 5) {
+                    status = 'Limited';
+                    label = 'Limited availability';
+                    className = 'limited';
+                } else {
+                    status = 'Available';
+                    label = 'Available';
+                    className = 'available';
+                }
+
+                barberStatuses.push({
+                    barber,
+                    status,
+                    availableSlots
+                });
+
+                const index = BARBERS.indexOf(barber);
+                const button = container.children[index];
+
+                if (button) {
+                    const indicator = button.querySelector(
+                        '.availability-label'
+                    );
+
+                    if (indicator) {
+                        indicator.textContent = label;
+                        indicator.className =
+                            `availability-label ${className}`;
+                    }
+
+                    button.setAttribute(
+                        'aria-label',
+                        `${barber}: ${status}, ${availableSlots} available 30-minute slots`
+                    );
+                }
+            });
+
+        // Update the Any barber indicator.
+        const anyIndex = BARBERS.indexOf('Any barber');
+        const anyButton = container.children[anyIndex];
+
+        if (anyButton) {
+            const totalSlots = barberStatuses.reduce(
+                (total, barber) => total + barber.availableSlots,
+                0
+            );
+
+            let label = 'Team available';
+            let className = 'available';
+
+            if (totalSlots === 0) {
+                label = 'Team fully booked';
+                className = 'full';
+            } else if (totalSlots <= 15) {
+                label = 'Limited team availability';
+                className = 'limited';
+            }
+
+            let indicator = anyButton.querySelector(
+                '.availability-label'
+            );
+
+            if (!indicator) {
+                indicator = document.createElement('small');
+                anyButton.appendChild(indicator);
+            }
+
+            indicator.textContent = label;
+            indicator.className =
+                `availability-label ${className}`;
+        }
+
+    } catch (error) {
+        console.error('Barber indicator error:', error);
+
+        if (requestNumber !== indicatorRequest) return;
+
+        buttons.forEach(button => {
+            const label = button.querySelector('.availability-label');
+
+            if (label) {
+                label.textContent = 'Unavailable to check';
+                label.className = 'availability-label checking';
+            }
+        });
+    }
 }
 
 // ==========================================
@@ -442,8 +651,12 @@ async function createTimeSlots() {
 // ==========================================
 
 if (dateInput) {
-    dateInput.addEventListener('change', createTimeSlots);
+    dateInput.addEventListener('change', () => {
+        refreshBarberIndicators();
+        createTimeSlots();
+    });
 
+    refreshBarberIndicators();
     createTimeSlots();
 }
 
@@ -534,10 +747,8 @@ if (bookingButton) {
 
             bookingButton.textContent = 'Submitting...';
 
-            // Generate a unique private tracking token.
             const trackingToken = generateTrackingToken();
 
-            // Save the booking and its tracking token together.
             const { error } = await window.supabaseClient
                 .from('bookings')
                 .insert([{
@@ -553,7 +764,6 @@ if (bookingButton) {
 
             if (error) throw error;
 
-            // Redirect the customer to their private status page.
             redirecting = true;
             bookingButton.textContent = 'Opening your booking...';
 
