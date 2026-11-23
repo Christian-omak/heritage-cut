@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,512 +9,416 @@
 
 <style>
 :root {
-    --bg: #101010;
-    --panel: #191919;
-    --panel2: #202020;
-    --border: #303030;
-    --gold: #d5b47a;
-    --text: #f3f0e9;
-    --muted: #929292;
-    --green: #62d995;
-    --red: #ff7777;
-    --yellow: #e6bd65;
+    --bg:#101010;
+    --panel:#191919;
+    --border:#303030;
+    --gold:#d5b47a;
+    --text:#f3f0e9;
+    --muted:#929292;
+    --green:#62d995;
+    --red:#ff7777;
+    --yellow:#e6bd65;
 }
 
-* {
-    box-sizing: border-box;
-}
+* { box-sizing:border-box; }
 
 body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: Arial, sans-serif;
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial,sans-serif;
 }
 
-button, input, select {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* LOGIN */
+button,input,select { font:inherit; }
+button { cursor:pointer; }
+.hidden { display:none!important; }
 
 .login-screen {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
 }
 
 .login-card {
-    width: 100%;
-    max-width: 420px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 38px;
+    width:100%;
+    max-width:420px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:38px;
 }
 
 .logo {
-    color: var(--gold);
-    font-size: 25px;
-    font-weight: 800;
-    letter-spacing: 4px;
+    color:var(--gold);
+    font-size:25px;
+    font-weight:800;
+    letter-spacing:4px;
 }
 
-.login-card h2 {
-    margin-top: 35px;
-    font-size: 23px;
-}
+.login-card h2 { margin-top:35px; }
 
 .login-card p {
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.6;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.6;
 }
 
-input, select {
-    width: 100%;
-    padding: 13px;
-    margin-top: 10px;
-    background: #111;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: white;
-    outline: none;
+input,select {
+    width:100%;
+    padding:13px;
+    margin-top:10px;
+    background:#111;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:white;
+    outline:none;
 }
 
-input:focus, select:focus {
-    border-color: var(--gold);
-}
+input:focus,select:focus { border-color:var(--gold); }
 
 button:disabled {
-    opacity: .5;
-    cursor: not-allowed;
+    opacity:.5;
+    cursor:not-allowed;
 }
 
 .primary {
-    background: var(--gold);
-    color: #111;
-    border: none;
-    padding: 12px 17px;
-    border-radius: 7px;
-    font-weight: bold;
+    background:var(--gold);
+    color:#111;
+    border:none;
+    padding:12px 17px;
+    border-radius:7px;
+    font-weight:bold;
 }
 
 .login-card .primary {
-    width: 100%;
-    margin-top: 20px;
+    width:100%;
+    margin-top:20px;
 }
 
 .message {
-    margin-top: 15px;
-    color: var(--gold);
-    font-size: 13px;
-    white-space: pre-wrap;
+    margin-top:15px;
+    color:var(--gold);
+    font-size:13px;
+    white-space:pre-wrap;
 }
 
-/* MAIN LAYOUT */
-
 .layout {
-    display: flex;
-    min-height: 100vh;
+    display:flex;
+    min-height:100vh;
 }
 
 .sidebar {
-    width: 245px;
-    background: #151515;
-    border-right: 1px solid var(--border);
-    padding: 30px 20px;
-    flex-shrink: 0;
+    width:245px;
+    background:#151515;
+    border-right:1px solid var(--border);
+    padding:30px 20px;
+    flex-shrink:0;
 }
 
 .sidebar .logo {
-    font-size: 19px;
-    letter-spacing: 2px;
-    padding: 0 10px 35px;
+    font-size:19px;
+    letter-spacing:2px;
+    padding:0 10px 35px;
 }
 
 .sidebar-label {
-    color: #666;
-    font-size: 10px;
-    letter-spacing: 2px;
-    margin: 15px 10px;
+    color:#666;
+    font-size:10px;
+    letter-spacing:2px;
+    margin:15px 10px;
 }
 
 .nav-item {
-    display: block;
-    width: 100%;
-    text-align: left;
-    color: #aaa;
-    background: transparent;
-    border: none;
-    padding: 14px 12px;
-    border-radius: 7px;
-    margin: 4px 0;
+    display:block;
+    width:100%;
+    text-align:left;
+    color:#aaa;
+    background:transparent;
+    border:none;
+    padding:14px 12px;
+    border-radius:7px;
+    margin:4px 0;
 }
 
 .nav-item.active {
-    background: #29251e;
-    color: var(--gold);
+    background:#29251e;
+    color:var(--gold);
 }
 
 .sidebar-bottom {
-    margin-top: 50px;
-    border-top: 1px solid var(--border);
-    padding-top: 20px;
+    margin-top:50px;
+    border-top:1px solid var(--border);
+    padding-top:20px;
 }
 
 .logout {
-    width: 100%;
-    background: #292929;
-    color: #ddd;
-    border: none;
-    padding: 13px;
-    border-radius: 7px;
+    width:100%;
+    background:#292929;
+    color:#ddd;
+    border:none;
+    padding:13px;
+    border-radius:7px;
 }
 
 .main {
-    flex: 1;
-    min-width: 0;
-    padding: 35px;
-    max-width: 1700px;
+    flex:1;
+    min-width:0;
+    padding:35px;
+    max-width:1700px;
 }
 
 .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 32px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    margin-bottom:32px;
 }
 
 .topbar h1 {
-    font-size: 27px;
-    margin: 0;
+    font-size:27px;
+    margin:0;
 }
 
 .subtitle {
-    color: var(--muted);
-    font-size: 13px;
-    margin-top: 8px;
+    color:var(--muted);
+    font-size:13px;
+    margin-top:8px;
 }
 
 .live-indicator {
-    color: var(--green);
-    font-size: 12px;
+    color:var(--yellow);
+    font-size:12px;
+    white-space:nowrap;
 }
 
-/* STATISTICS */
-
 .stats {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 17px;
-    margin-bottom: 30px;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:17px;
+    margin-bottom:30px;
 }
 
 .stat-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 22px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:22px;
 }
 
 .stat-label {
-    color: var(--muted);
-    font-size: 12px;
+    color:var(--muted);
+    font-size:12px;
 }
 
 .stat-number {
-    font-size: 32px;
-    font-weight: bold;
-    margin-top: 15px;
+    font-size:32px;
+    font-weight:bold;
+    margin-top:15px;
 }
 
 .stat-note {
-    color: #777;
-    font-size: 11px;
-    margin-top: 8px;
+    color:#777;
+    font-size:11px;
+    margin-top:8px;
 }
 
-.gold {
-    color: var(--gold);
-}
-
-.green {
-    color: var(--green);
-}
-
-.yellow {
-    color: var(--yellow);
-}
-
-.red {
-    color: var(--red);
-}
-
-/* APPOINTMENTS */
+.gold { color:var(--gold); }
+.green { color:var(--green); }
+.yellow { color:var(--yellow); }
+.red { color:var(--red); }
 
 .section-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:18px;
 }
 
 .section-heading h2 {
-    font-size: 19px;
-    margin: 0;
+    font-size:19px;
+    margin:0;
 }
 
 .panel {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:22px;
+    margin-bottom:22px;
 }
 
 .toolbar {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr auto;
-    gap: 10px;
-    margin-bottom: 20px;
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr auto;
+    gap:10px;
+    margin-bottom:20px;
 }
 
-.toolbar input,
-.toolbar select {
-    margin: 0;
-    min-width: 0;
+.toolbar input,.toolbar select {
+    margin:0;
+    min-width:0;
 }
 
 .refresh {
-    background: #303030;
-    border: 1px solid #444;
-    color: white;
-    border-radius: 7px;
-    padding: 0 17px;
+    background:#303030;
+    border:1px solid #444;
+    color:white;
+    border-radius:7px;
+    padding:0 17px;
 }
 
-.table-wrap {
-    overflow-x: auto;
-}
+.table-wrap { overflow-x:auto; }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 1050px;
+    width:100%;
+    border-collapse:collapse;
+    min-width:1050px;
 }
 
 th {
-    color: var(--gold);
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    text-align: left;
-    padding: 15px 12px;
-    border-bottom: 1px solid var(--border);
+    color:var(--gold);
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    text-align:left;
+    padding:15px 12px;
+    border-bottom:1px solid var(--border);
 }
 
 td {
-    padding: 16px 12px;
-    border-bottom: 1px solid #292929;
-    font-size: 12px;
-    vertical-align: middle;
+    padding:16px 12px;
+    border-bottom:1px solid #292929;
+    font-size:12px;
+    vertical-align:middle;
 }
 
-tbody tr:hover {
-    background: #222;
-}
+tbody tr:hover { background:#222; }
 
 .customer-name {
-    font-weight: bold;
-    color: white;
+    font-weight:bold;
+    color:white;
 }
 
 .customer-phone {
-    color: var(--muted);
-    margin-top: 5px;
-    font-size: 11px;
+    color:var(--muted);
+    margin-top:5px;
+    font-size:11px;
 }
 
 .assignment {
-    min-width: 145px;
-    padding: 9px;
-    margin: 0;
+    min-width:145px;
+    padding:9px;
+    margin:0;
 }
 
 .status {
-    display: inline-block;
-    padding: 7px 10px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: bold;
+    display:inline-block;
+    padding:7px 10px;
+    border-radius:20px;
+    font-size:10px;
+    font-weight:bold;
 }
 
 .status.pending {
-    color: var(--yellow);
-    background: #3b3220;
+    color:var(--yellow);
+    background:#3b3220;
 }
 
 .status.confirmed {
-    color: var(--green);
-    background: #193526;
+    color:var(--green);
+    background:#193526;
 }
 
 .status.cancelled {
-    color: var(--red);
-    background: #3a2020;
+    color:var(--red);
+    background:#3a2020;
 }
 
-.actions {
-    white-space: nowrap;
-}
+.actions { white-space:nowrap; }
 
-.confirm, .cancel {
-    border: none;
-    border-radius: 5px;
-    padding: 9px 11px;
-    font-size: 11px;
-    font-weight: bold;
-    margin: 2px;
+.confirm,.cancel {
+    border:none;
+    border-radius:5px;
+    padding:9px 11px;
+    font-size:11px;
+    font-weight:bold;
+    margin:2px;
 }
 
 .confirm {
-    background: #287c4b;
-    color: white;
+    background:#287c4b;
+    color:white;
 }
 
 .cancel {
-    background: #8e3434;
-    color: white;
+    background:#8e3434;
+    color:white;
 }
 
 .empty {
-    text-align: center;
-    color: var(--muted);
-    padding: 40px;
+    text-align:center;
+    color:var(--muted);
+    padding:40px;
 }
 
 .small {
-    color: var(--muted);
-    font-size: 11px;
+    color:var(--muted);
+    font-size:11px;
 }
 
 @media(max-width:1100px) {
-    .stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .toolbar {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .toolbar input:first-child {
-        grid-column: span 2;
-    }
+    .stats { grid-template-columns:repeat(2,1fr); }
+    .toolbar { grid-template-columns:repeat(2,1fr); }
+    .toolbar input:first-child { grid-column:span 2; }
 }
 
 @media(max-width:750px) {
-    .layout {
-        display: block;
-    }
+    .layout { display:block; }
 
     .sidebar {
-        width: 100%;
-        padding: 15px;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
+        width:100%;
+        padding:15px;
+        border-right:none;
+        border-bottom:1px solid var(--border);
     }
 
-    .sidebar .logo {
-        padding: 5px 5px 15px;
-    }
-
-    .sidebar-label {
-        display: none;
-    }
+    .sidebar .logo { padding:5px 5px 15px; }
+    .sidebar-label { display:none; }
 
     .nav-item {
-        display: inline-block;
-        width: auto;
-        padding: 10px;
+        display:inline-block;
+        width:auto;
+        padding:10px;
     }
 
     .sidebar-bottom {
-        display: inline-block;
-        border: none;
-        padding: 0;
-        margin: 0 0 0 5px;
+        display:inline-block;
+        border:none;
+        padding:0;
+        margin:0 0 0 5px;
     }
 
-    .logout {
-        padding: 10px;
-    }
-
-    .main {
-        padding: 20px 13px;
-    }
-
-    .topbar {
-        align-items: flex-start;
-    }
-
-    .topbar h1 {
-        font-size: 22px;
-    }
-
-    .stats {
-        gap: 10px;
-    }
-
-    .stat-card {
-        padding: 15px;
-    }
-
-    .stat-number {
-        font-size: 26px;
-    }
-
-    .panel {
-        padding: 13px;
-    }
-
-    .toolbar {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .toolbar input:first-child {
-        grid-column: span 2;
-    }
-
-    .refresh {
-        min-height: 43px;
-    }
+    .logout { padding:10px; }
+    .main { padding:20px 13px; }
+    .topbar { align-items:flex-start; }
+    .topbar h1 { font-size:22px; }
+    .stats { gap:10px; }
+    .stat-card { padding:15px; }
+    .stat-number { font-size:26px; }
+    .panel { padding:13px; }
+    .toolbar { grid-template-columns:1fr 1fr; }
+    .toolbar input:first-child { grid-column:span 2; }
+    .refresh { min-height:43px; }
 }
 
 @media(max-width:420px) {
-    .stats {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .toolbar {
-        grid-template-columns: 1fr;
-    }
-
-    .toolbar input:first-child {
-        grid-column: auto;
-    }
+    .stats { grid-template-columns:1fr 1fr; }
+    .toolbar { grid-template-columns:1fr; }
+    .toolbar input:first-child { grid-column:auto; }
 }
 </style>
 </head>
@@ -525,106 +428,87 @@ tbody tr:hover {
 <!-- LOGIN -->
 
 <section id="loginPanel" class="login-screen">
-
     <div class="login-card">
-
         <div class="logo">HERITAGE CUT</div>
-
         <h2>Welcome back.</h2>
-
         <p>Sign in to manage your barbershop appointments.</p>
 
         <input id="email" type="email" placeholder="Admin email">
-
         <input id="password" type="password" placeholder="Password">
 
         <button class="primary" id="loginBtn">Sign In</button>
-
         <div id="loginMessage" class="message"></div>
-
     </div>
-
 </section>
-
 
 <!-- DASHBOARD -->
 
 <div id="dashboard" class="layout hidden">
 
     <aside class="sidebar">
-
         <div class="logo">HERITAGE CUT</div>
 
         <div class="sidebar-label">MANAGEMENT</div>
 
-        <button class="nav-item active">
-            ◈ &nbsp; Overview
-        </button>
+        <button class="nav-item active">◈ &nbsp; Overview</button>
 
         <button class="nav-item" id="appointmentsNav">
             ▣ &nbsp; Appointments
         </button>
 
         <div class="sidebar-bottom">
-            <button class="logout" id="logoutBtn">
-                Log Out
-            </button>
+            <button class="logout" id="logoutBtn">Log Out</button>
         </div>
-
     </aside>
 
+    <main class="main">
 
-   <main class="main">
-    <header class="topbar">
-        <div>
-            <h1>Dashboard</h1>
-            <div class="subtitle">
-                Welcome to your Heritage Cut management panel.
+        <header class="topbar">
+            <div>
+                <h1>Dashboard</h1>
+                <div class="subtitle">
+                    Welcome to your Heritage Cut management panel.
+                </div>
             </div>
-        </div>
 
-        <div class="live-indicator" id="realtimeStatus">
-            ● CONNECTING...
-        </div>
-    </header>
+            <div class="live-indicator" id="realtimeStatus">
+                ● CONNECTING...
+            </div>
+        </header>
 
-    <!-- STATISTICS -->
-    <section class="stats">
-        <div class="stat-card">
-            <div class="stat-label">TOTAL BOOKINGS</div>
-            <div class="stat-number gold" id="totalBookings">0</div>
-            <div class="stat-note">All appointments</div>
-        </div>
+        <!-- STATISTICS -->
 
-        <div class="stat-card">
-            <div class="stat-label">TODAY'S APPOINTMENTS</div>
-            <div class="stat-number" id="todayBookings">0</div>
-            <div class="stat-note">Scheduled for today</div>
-        </div>
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-label">TOTAL BOOKINGS</div>
+                <div class="stat-number gold" id="totalBookings">0</div>
+                <div class="stat-note">All appointments</div>
+            </div>
 
-        <div class="stat-card">
-            <div class="stat-label">PENDING REQUESTS</div>
-            <div class="stat-number yellow" id="pendingBookings">0</div>
-            <div class="stat-note">Awaiting your approval</div>
-        </div>
+            <div class="stat-card">
+                <div class="stat-label">TODAY'S APPOINTMENTS</div>
+                <div class="stat-number" id="todayBookings">0</div>
+                <div class="stat-note">Scheduled for today</div>
+            </div>
 
-        <div class="stat-card">
-            <div class="stat-label">CONFIRMED BOOKINGS</div>
-            <div class="stat-number green" id="confirmedBookings">0</div>
-            <div class="stat-note">Accepted appointments</div>
-        </div>
-    </section>
-</main>
+            <div class="stat-card">
+                <div class="stat-label">PENDING REQUESTS</div>
+                <div class="stat-number yellow" id="pendingBookings">0</div>
+                <div class="stat-note">Awaiting your approval</div>
+            </div>
 
+            <div class="stat-card">
+                <div class="stat-label">CONFIRMED BOOKINGS</div>
+                <div class="stat-number green" id="confirmedBookings">0</div>
+                <div class="stat-note">Accepted appointments</div>
+            </div>
         </section>
-
 
         <!-- APPOINTMENTS -->
 
         <section class="panel" id="appointmentsSection">
 
             <div class="section-heading">
-
                 <div>
                     <h2>Appointments</h2>
                     <p class="small">
@@ -635,11 +519,7 @@ tbody tr:hover {
                 <button class="primary" id="refreshBtn">
                     ↻ Refresh
                 </button>
-
             </div>
-
-
-            <!-- SEARCH AND FILTERS -->
 
             <div class="toolbar">
 
@@ -671,16 +551,10 @@ tbody tr:hover {
 
             </div>
 
-
             <div id="message" class="message"></div>
 
-
-            <!-- TABLE -->
-
             <div class="table-wrap">
-
                 <table>
-
                     <thead>
                         <tr>
                             <th>Customer</th>
@@ -702,9 +576,7 @@ tbody tr:hover {
                             </td>
                         </tr>
                     </tbody>
-
                 </table>
-
             </div>
 
         </section>
@@ -714,15 +586,19 @@ tbody tr:hover {
         </div>
 
     </main>
-
 </div>
-
 
 <script>
 
 // ==========================================
 // SUPABASE CONFIGURATION
 // ==========================================
+
+const SUPABASE_URL =
+    'https://zqkrnnllqznseezlxlyo.supabase.co';
+
+const SUPABASE_KEY =
+    'sb_publishable_22sfkbflstpyAcPm-xDqsg_kmCISgOM';
 
 const ADMIN_UID =
     '322779e8-2fca-4b79-b5cf-1de4df79456e';
@@ -733,6 +609,67 @@ const db = window.supabase.createClient(
 );
 
 const $ = id => document.getElementById(id);
+
+
+// ==========================================
+// REALTIME BOOKING UPDATES
+// ==========================================
+
+let bookingsChannel = null;
+let realtimeRefreshTimer = null;
+
+function setRealtimeStatus(status) {
+    const el = $('realtimeStatus');
+    if (!el) return;
+
+    if (status === 'SUBSCRIBED') {
+        el.textContent = '● LIVE UPDATES';
+        el.style.color = '#62d995';
+    } else if (status === 'CONNECTING') {
+        el.textContent = '● CONNECTING...';
+        el.style.color = '#e6bd65';
+    } else {
+        el.textContent = '● RECONNECTING...';
+        el.style.color = '#e6bd65';
+    }
+}
+
+function startRealtime() {
+    if (bookingsChannel) return;
+
+    setRealtimeStatus('CONNECTING');
+
+    bookingsChannel = db
+        .channel('admin-bookings-live')
+        .on(
+            'postgres_changes',
+            {
+                event: '*',
+                schema: 'public',
+                table: 'bookings'
+            },
+            () => {
+                clearTimeout(realtimeRefreshTimer);
+
+                realtimeRefreshTimer = setTimeout(() => {
+                    loadBookings();
+                }, 350);
+            }
+        )
+        .subscribe(status => {
+            setRealtimeStatus(status);
+        });
+}
+
+async function stopRealtime() {
+    clearTimeout(realtimeRefreshTimer);
+    realtimeRefreshTimer = null;
+
+    if (bookingsChannel) {
+        await db.removeChannel(bookingsChannel);
+        bookingsChannel = null;
+    }
+}
 
 
 // ==========================================
@@ -766,7 +703,6 @@ function normalizeBarber(name) {
     const barber = String(name || '').trim().toLowerCase();
 
     if (barber === 'maher') return 'Maher Nayef';
-
     if (barber === 'najem') return 'Najem';
 
     if (barber === 'majed' || barber === 'majed nayef') {
@@ -814,10 +750,7 @@ function getToday() {
 
 function showMessage(message, error = false) {
     $('message').textContent = message;
-
-    $('message').style.color = error
-        ? '#ff7777'
-        : '#d5b47a';
+    $('message').style.color = error ? '#ff7777' : '#d5b47a';
 }
 
 
@@ -826,7 +759,6 @@ function showMessage(message, error = false) {
 // ==========================================
 
 async function login() {
-
     const email = $('email').value.trim();
     const password = $('password').value;
 
@@ -840,7 +772,6 @@ async function login() {
     $('loginMessage').textContent = 'Signing in...';
 
     try {
-
         const { data, error } = await db.auth.signInWithPassword({
             email,
             password
@@ -849,9 +780,7 @@ async function login() {
         if (error) throw error;
 
         if (!data.user || data.user.id !== ADMIN_UID) {
-
             await db.auth.signOut();
-
             throw new Error('This account is not authorized.');
         }
 
@@ -862,13 +791,9 @@ async function login() {
         await loadBookings();
 
     } catch (error) {
-
         $('loginMessage').textContent = error.message;
-
     } finally {
-
         $('loginBtn').disabled = false;
-
     }
 }
 
@@ -878,15 +803,12 @@ async function login() {
 // ==========================================
 
 async function checkSession() {
-
     try {
-
         const { data, error } = await db.auth.getSession();
 
         if (error) throw error;
 
         if (data.session) {
-
             if (data.session.user.id !== ADMIN_UID) {
                 await db.auth.signOut();
                 return;
@@ -900,9 +822,7 @@ async function checkSession() {
         }
 
     } catch (error) {
-
         $('loginMessage').textContent = error.message;
-
     }
 }
 
@@ -912,7 +832,6 @@ async function checkSession() {
 // ==========================================
 
 async function loadBookings() {
-
     $('bookingsBody').innerHTML = `
         <tr>
             <td colspan="9" class="empty">
@@ -927,7 +846,6 @@ async function loadBookings() {
         .order('created_at', { ascending: false });
 
     if (error) {
-
         $('bookingsBody').innerHTML = `
             <tr>
                 <td colspan="9" class="empty">
@@ -937,7 +855,6 @@ async function loadBookings() {
         `;
 
         showMessage('Could not load bookings.', true);
-
         return;
     }
 
@@ -955,11 +872,9 @@ async function loadBookings() {
 // ==========================================
 
 function updateStatistics() {
-
     const today = getToday();
 
-    $('totalBookings').textContent =
-        allBookings.length;
+    $('totalBookings').textContent = allBookings.length;
 
     $('todayBookings').textContent =
         allBookings.filter(booking =>
@@ -984,17 +899,12 @@ function updateStatistics() {
 // ==========================================
 
 function getFilteredBookings() {
-
-    const search = $('searchInput').value
-        .trim()
-        .toLowerCase();
-
+    const search = $('searchInput').value.trim().toLowerCase();
     const status = $('statusFilter').value;
     const barber = $('barberFilter').value;
     const date = $('dateFilter').value;
 
     return allBookings.filter(booking => {
-
         const customer = String(
             booking.customer_name || ''
         ).toLowerCase();
@@ -1029,7 +939,6 @@ function getFilteredBookings() {
             matchesBarber &&
             matchesDate
         );
-
     });
 }
 
@@ -1039,11 +948,9 @@ function getFilteredBookings() {
 // ==========================================
 
 function renderBookings() {
-
     const bookings = getFilteredBookings();
 
     if (!bookings.length) {
-
         $('bookingsBody').innerHTML = `
             <tr>
                 <td colspan="9" class="empty">
@@ -1051,18 +958,13 @@ function renderBookings() {
                 </td>
             </tr>
         `;
-
         return;
     }
 
     $('bookingsBody').innerHTML = bookings.map(booking => {
-
         const status = booking.status || 'Pending';
-
         const requestedBarber = booking.barber || '';
-
         const assigned = booking.assigned_barber || '';
-
         const normalized = normalizeBarber(requestedBarber);
 
         const isAnyBarber =
@@ -1080,9 +982,7 @@ function renderBookings() {
             getDuration(booking.service);
 
         const options = `
-            <option value="">
-                Choose a barber
-            </option>
+            <option value="">Choose a barber</option>
 
             ${BARBERS.map(barber => `
                 <option
@@ -1097,7 +997,6 @@ function renderBookings() {
         let assignment;
 
         if (status === 'Pending') {
-
             assignment = `
                 <select
                     class="assignment"
@@ -1106,19 +1005,13 @@ function renderBookings() {
                     ${options}
                 </select>
             `;
-
         } else {
-
-            assignment = escapeHTML(
-                assigned || 'Not assigned'
-            );
-
+            assignment = escapeHTML(assigned || 'Not assigned');
         }
 
         let actions = '';
 
         if (status === 'Pending') {
-
             actions = `
                 <button
                     class="confirm"
@@ -1136,9 +1029,7 @@ function renderBookings() {
                     Cancel
                 </button>
             `;
-
         } else if (status === 'Confirmed') {
-
             actions = `
                 <button
                     class="cancel"
@@ -1148,53 +1039,29 @@ function renderBookings() {
                     Cancel
                 </button>
             `;
-
         } else {
-
-            actions = `
-                <span class="small">No actions</span>
-            `;
-
+            actions = `<span class="small">No actions</span>`;
         }
 
         const statusClass = String(status).toLowerCase();
 
         return `
             <tr>
-
                 <td>
                     <div class="customer-name">
                         ${escapeHTML(booking.customer_name)}
                     </div>
-
                     <div class="customer-phone">
                         ${escapeHTML(booking.phone)}
                     </div>
                 </td>
 
-                <td>
-                    ${escapeHTML(requestedBarber)}
-                </td>
-
-                <td>
-                    ${assignment}
-                </td>
-
-                <td>
-                    ${escapeHTML(booking.service)}
-                </td>
-
-                <td>
-                    ${escapeHTML(booking.appointment_date)}
-                </td>
-
-                <td>
-                    ${escapeHTML(booking.appointment_time)}
-                </td>
-
-                <td>
-                    ${duration} min
-                </td>
+                <td>${escapeHTML(requestedBarber)}</td>
+                <td>${assignment}</td>
+                <td>${escapeHTML(booking.service)}</td>
+                <td>${escapeHTML(booking.appointment_date)}</td>
+                <td>${escapeHTML(booking.appointment_time)}</td>
+                <td>${duration} min</td>
 
                 <td>
                     <span class="status ${escapeHTML(statusClass)}">
@@ -1202,15 +1069,10 @@ function renderBookings() {
                     </span>
                 </td>
 
-                <td class="actions">
-                    ${actions}
-                </td>
-
+                <td class="actions">${actions}</td>
             </tr>
         `;
-
     }).join('');
-
 }
 
 
@@ -1219,13 +1081,11 @@ function renderBookings() {
 // ==========================================
 
 async function updateBooking(id, action, button) {
-
     if (button) button.disabled = true;
 
     showMessage('Updating appointment...');
 
     try {
-
         const { data: current, error: readError } = await db
             .from('bookings')
             .select('*')
@@ -1233,54 +1093,38 @@ async function updateBooking(id, action, button) {
             .single();
 
         if (readError || !current) {
-
             throw new Error(
                 readError?.message || 'Booking not found.'
             );
-
         }
 
         if (action === 'confirm' && current.status !== 'Pending') {
-
             throw new Error(
                 'This booking has already been processed.'
             );
-
         }
 
         if (action === 'cancel' && current.status === 'Cancelled') {
-
-            throw new Error(
-                'This booking is already cancelled.'
-            );
-
+            throw new Error('This booking is already cancelled.');
         }
 
         let updates;
 
         if (action === 'confirm') {
-
             let assignedBarber = normalizeBarber(current.barber);
 
             if (
                 !assignedBarber ||
                 String(assignedBarber).toLowerCase().includes('any')
             ) {
-
                 const selector = $('barber-' + id);
-
-                assignedBarber = selector
-                    ? selector.value
-                    : '';
-
+                assignedBarber = selector ? selector.value : '';
             }
 
             if (!BARBERS.includes(assignedBarber)) {
-
                 throw new Error(
                     'Please select a barber before confirming.'
                 );
-
             }
 
             updates = {
@@ -1290,15 +1134,9 @@ async function updateBooking(id, action, button) {
             };
 
         } else if (action === 'cancel') {
-
-            updates = {
-                status: 'Cancelled'
-            };
-
+            updates = { status: 'Cancelled' };
         } else {
-
             return;
-
         }
 
         const { error } = await db
@@ -1317,17 +1155,12 @@ async function updateBooking(id, action, button) {
         await loadBookings();
 
     } catch (error) {
-
         showMessage(error.message, true);
-
         await loadBookings();
 
     } finally {
-
         if (button) button.disabled = false;
-
     }
-
 }
 
 
@@ -1338,14 +1171,13 @@ async function updateBooking(id, action, button) {
 $('loginBtn').addEventListener('click', login);
 
 $('password').addEventListener('keydown', event => {
-
     if (event.key === 'Enter') login();
-
 });
 
 $('refreshBtn').addEventListener('click', loadBookings);
 
 $('logoutBtn').addEventListener('click', async () => {
+    await stopRealtime();
 
     await db.auth.signOut();
 
@@ -1354,14 +1186,10 @@ $('logoutBtn').addEventListener('click', async () => {
 
     $('password').value = '';
     $('loginMessage').textContent = '';
-
 });
 
 $('bookingsBody').addEventListener('click', event => {
-
-    const button = event.target.closest(
-        'button[data-action]'
-    );
+    const button = event.target.closest('button[data-action]');
 
     if (!button) return;
 
@@ -1370,7 +1198,6 @@ $('bookingsBody').addEventListener('click', event => {
         button.dataset.action,
         button
     );
-
 });
 
 [
@@ -1379,28 +1206,22 @@ $('bookingsBody').addEventListener('click', event => {
     'barberFilter',
     'dateFilter'
 ].forEach(id => {
-
     $(id).addEventListener('input', renderBookings);
-
 });
 
 $('clearFilters').addEventListener('click', () => {
-
     $('searchInput').value = '';
     $('statusFilter').value = 'all';
     $('barberFilter').value = 'all';
     $('dateFilter').value = '';
 
     renderBookings();
-
 });
 
 $('appointmentsNav').addEventListener('click', () => {
-
     $('appointmentsSection').scrollIntoView({
-        behavior: 'smooth'
+        behavior:'smooth'
     });
-
 });
 
 
