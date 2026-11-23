@@ -162,7 +162,7 @@ const SERVICES = [
 const BARBER_ALIASES = {
     'Maher': ['maher', 'maher nayef'],
     'Najem': ['najem'],
-    'Majd': ['majd']
+    'Majed': ['majed', 'majed nayef']
 };
 
 // ==========================================
