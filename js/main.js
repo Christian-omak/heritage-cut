@@ -1,4 +1,4 @@
-const $ = (selector) => document.querySelector(selector);
+const $ = selector => document.querySelector(selector);
 
 // LOADING SCREEN
 window.addEventListener('load', () => {
@@ -21,7 +21,7 @@ if (marquee) {
 const revealElements = document.querySelectorAll('.rv');
 
 if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('in');
@@ -53,14 +53,12 @@ const SERVICES = [
 
 function createChips(selector, options, key) {
     const container = $(selector);
-
     if (!container) return;
 
     container.innerHTML = '';
 
     options.forEach(option => {
         const button = document.createElement('button');
-
         button.type = 'button';
         button.textContent = option;
 
@@ -87,23 +85,17 @@ const dateInput = $('#bd');
 const pad = number => String(number).padStart(2, '0');
 
 const formatDate = date => {
-    return [
-        date.getFullYear(),
-        pad(date.getMonth() + 1),
-        pad(date.getDate())
-    ].join('-');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 };
 
 if (dateInput) {
     const today = new Date();
-
     dateInput.min = formatDate(today);
     dateInput.value = formatDate(today);
 }
 
 function createTimeSlots() {
     const container = $('#ct');
-
     if (!container || !dateInput) return;
 
     container.innerHTML = '';
@@ -116,11 +108,9 @@ function createTimeSlots() {
     for (let minutes = 600; minutes <= 1170; minutes += 30) {
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
-
         const time = `${pad(hours)}:${pad(mins)}`;
 
         const button = document.createElement('button');
-
         button.type = 'button';
         button.textContent = time;
 
@@ -155,17 +145,15 @@ if (dateInput) {
 // BOOKING SUMMARY
 function updateSummary() {
     const message = $('#bm');
-
     if (!message || !dateInput) return;
 
     if (S.barber && S.service && S.time && dateInput.value) {
-        const date = new Date(
-            dateInput.value + 'T00:00'
-        ).toLocaleDateString('en-GB', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long'
-        });
+        const date = new Date(dateInput.value + 'T00:00')
+            .toLocaleDateString('en-GB', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+            });
 
         message.textContent =
             `${S.service} with ${S.barber}, ${date} at ${S.time}`;
@@ -223,7 +211,6 @@ if (bookingButton) {
             message.textContent =
                 'Booking request received! Thank you! Your request has been submitted. We will contact you shortly to confirm your appointment.';
 
-            // RESET FORM
             $('#bn').value = '';
             $('#bp').value = '';
 
@@ -238,7 +225,6 @@ if (bookingButton) {
 
         } catch (error) {
             console.error('Booking error:', error);
-
             message.textContent =
                 'Could not save your booking. Please try again.';
         } finally {
