@@ -573,51 +573,47 @@ tbody tr:hover {
     </aside>
 
 
-    <main class="main">
-
-        <header class="topbar">
-
-            <div>
-                <h1>Dashboard</h1>
-                <div class="subtitle">
-                    Welcome to your Heritage Cut management panel.
-                </div>
+   <main class="main">
+    <header class="topbar">
+        <div>
+            <h1>Dashboard</h1>
+            <div class="subtitle">
+                Welcome to your Heritage Cut management panel.
             </div>
+        </div>
 
-            <div class="live-indicator">
-                ● ADMIN ACCESS
-            </div>
+        <div class="live-indicator" id="realtimeStatus">
+            ● CONNECTING...
+        </div>
+    </header>
 
-        </header>
+    <!-- STATISTICS -->
+    <section class="stats">
+        <div class="stat-card">
+            <div class="stat-label">TOTAL BOOKINGS</div>
+            <div class="stat-number gold" id="totalBookings">0</div>
+            <div class="stat-note">All appointments</div>
+        </div>
 
+        <div class="stat-card">
+            <div class="stat-label">TODAY'S APPOINTMENTS</div>
+            <div class="stat-number" id="todayBookings">0</div>
+            <div class="stat-note">Scheduled for today</div>
+        </div>
 
-        <!-- STATISTICS -->
+        <div class="stat-card">
+            <div class="stat-label">PENDING REQUESTS</div>
+            <div class="stat-number yellow" id="pendingBookings">0</div>
+            <div class="stat-note">Awaiting your approval</div>
+        </div>
 
-        <section class="stats">
-
-            <div class="stat-card">
-                <div class="stat-label">TOTAL BOOKINGS</div>
-                <div class="stat-number gold" id="totalBookings">0</div>
-                <div class="stat-note">All appointments</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">TODAY'S APPOINTMENTS</div>
-                <div class="stat-number" id="todayBookings">0</div>
-                <div class="stat-note">Scheduled for today</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">PENDING REQUESTS</div>
-                <div class="stat-number yellow" id="pendingBookings">0</div>
-                <div class="stat-note">Awaiting your approval</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">CONFIRMED BOOKINGS</div>
-                <div class="stat-number green" id="confirmedBookings">0</div>
-                <div class="stat-note">Accepted appointments</div>
-            </div>
+        <div class="stat-card">
+            <div class="stat-label">CONFIRMED BOOKINGS</div>
+            <div class="stat-number green" id="confirmedBookings">0</div>
+            <div class="stat-note">Accepted appointments</div>
+        </div>
+    </section>
+</main>
 
         </section>
 
