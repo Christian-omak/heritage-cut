@@ -1,12 +1,12 @@
-?variant="standard" id="58321" title="Heritage Cut Admin Panel — Complete Replacement"}
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Heritage Cut | Admin</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101010;color:#eee;font-family:Arial,sans-serif;padding:25px}
@@ -16,6 +16,7 @@ h1{color:#d5b47a}
 .panel{background:#1b1b1b;border:1px solid #333;border-radius:12px;padding:24px;margin-bottom:20px}
 input,select{background:#111;color:white;border:1px solid #444;padding:12px;border-radius:6px;width:100%;margin:8px 0}
 button{padding:11px 16px;border:0;border-radius:6px;cursor:pointer;font-weight:bold;margin:4px}
+button:disabled{opacity:.5;cursor:not-allowed}
 .primary{background:#d5b47a;color:#111}
 .confirm{background:#287c4b;color:white}
 .cancel{background:#9d3434;color:white}
@@ -31,10 +32,11 @@ th{color:#d5b47a}
 .hidden{display:none}
 .message{margin-top:15px;color:#d5b47a;white-space:pre-wrap}
 .small{color:#aaa;font-size:13px}
-.assignment{min-width:130px}
+.assignment{min-width:150px}
 @media(max-width:600px){body{padding:12px}.panel{padding:15px}}
 </style>
 </head>
+
 <body>
 <div class="container">
 
@@ -43,18 +45,24 @@ th{color:#d5b47a}
 
 <section id="loginPanel" class="panel">
 <h2>Administrator Login</h2>
+
 <input id="email" type="email" placeholder="Admin email">
 <input id="password" type="password" placeholder="Password">
+
 <button class="primary" id="loginBtn">Log In</button>
+
 <div id="loginMessage" class="message"></div>
 </section>
 
 <section id="dashboard" class="hidden">
+
 <div class="panel">
 <h2>Bookings</h2>
 <p class="small">Confirm or cancel customer appointment requests.</p>
+
 <button class="primary" id="refreshBtn">Refresh Bookings</button>
 <button class="logout" id="logoutBtn">Log Out</button>
+
 <div id="message" class="message"></div>
 </div>
 
@@ -74,20 +82,27 @@ th{color:#d5b47a}
 <th>Actions</th>
 </tr>
 </thead>
+
 <tbody id="bookingsBody">
 <tr><td colspan="10">Loading bookings...</td></tr>
 </tbody>
 </table>
 </div>
+
 </section>
 </div>
 
 <script>
 const SUPABASE_URL = 'https://zqkrnnllqznseezlxlyo.supabase.co';
+
 const SUPABASE_KEY = 'sb_publishable_22sfkbflstpyAcPm-xDqsg_kmCISgOM';
+
 const ADMIN_UID = '322779e8-2fca-4b79-b5cf-1de4df79456e';
 
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 const $ = id => document.getElementById(id);
 
@@ -110,8 +125,12 @@ function escapeHTML(value) {
 function getDuration(service) {
   const s = String(service || '').toLowerCase();
 
-  if (s.includes('cut and beard') || s.includes('haircut and beard') ||
-      s.includes('haircut & beard') || s.includes('combo')) {
+  if (
+    s.includes('cut and beard') ||
+    s.includes('haircut and beard') ||
+    s.includes('haircut & beard') ||
+    s.includes('combo')
+  ) {
     return 60;
   }
 
@@ -126,6 +145,16 @@ function getDuration(service) {
   return 30;
 }
 
+function normalizeBarber(name) {
+  const barber = String(name || '').trim().toLowerCase();
+
+  if (barber === 'maher') return 'Maher Nayef';
+  if (barber === 'najem') return 'Najem';
+  if (barber === 'nayef') return 'Nayef Hussein';
+
+  return name;
+}
+
 function showMessage(message, isError = false) {
   $('message').textContent = message;
   $('message').style.color = isError ? '#ff7777' : '#d5b47a';
@@ -135,37 +164,53 @@ async function login() {
   const email = $('email').value.trim();
   const password = $('password').value;
 
+  if (!email || !password) {
+    $('loginMessage').textContent = 'Please enter your email and password.';
+    return;
+  }
+
+  $('loginBtn').disabled = true;
   $('loginMessage').textContent = 'Logging in...';
 
-  const {data, error} = await db.auth.signInWithPassword({
-    email,
-    password
-  });
+  try {
+    const {data, error} = await db.auth.signInWithPassword({
+      email,
+      password
+    });
 
-  if (error) {
+    if (error) throw error;
+
+    if (!data.user || data.user.id !== ADMIN_UID) {
+      await db.auth.signOut();
+      throw new Error('This account is not authorized.');
+    }
+
+    $('loginPanel').classList.add('hidden');
+    $('dashboard').classList.remove('hidden');
+
+    await loadBookings();
+
+  } catch (error) {
     $('loginMessage').textContent = error.message;
-    return;
+  } finally {
+    $('loginBtn').disabled = false;
   }
-
-  if (data.user.id !== ADMIN_UID) {
-    await db.auth.signOut();
-    $('loginMessage').textContent = 'This account is not authorized.';
-    return;
-  }
-
-  $('loginPanel').classList.add('hidden');
-  $('dashboard').classList.remove('hidden');
-
-  await loadBookings();
 }
 
 async function checkSession() {
-  const {data} = await db.auth.getSession();
+  try {
+    const {data, error} = await db.auth.getSession();
 
-  if (data.session && data.session.user.id === ADMIN_UID) {
-    $('loginPanel').classList.add('hidden');
-    $('dashboard').classList.remove('hidden');
-    await loadBookings();
+    if (error) throw error;
+
+    if (data.session && data.session.user.id === ADMIN_UID) {
+      $('loginPanel').classList.add('hidden');
+      $('dashboard').classList.remove('hidden');
+
+      await loadBookings();
+    }
+  } catch (error) {
+    $('loginMessage').textContent = error.message;
   }
 }
 
@@ -180,7 +225,7 @@ async function loadBookings() {
 
   if (error) {
     $('bookingsBody').innerHTML =
-      '<tr><td colspan="10">Error loading bookings: ' +
+      '<tr><td colspan="10">Error: ' +
       escapeHTML(error.message) + '</td></tr>';
     return;
   }
@@ -195,14 +240,31 @@ async function loadBookings() {
     const status = booking.status || 'Pending';
     const requestedBarber = booking.barber || '';
     const assigned = booking.assigned_barber || '';
-    const duration = booking.duration_minutes || getDuration(booking.service);
+    const duration =
+      booking.duration_minutes || getDuration(booking.service);
 
-    const options = BARBERS.map(barber =>
-      `<option value="${escapeHTML(barber)}"
-        ${assigned === barber ? 'selected' : ''}>
-        ${escapeHTML(barber)}
-      </option>`
-    ).join('');
+    const normalized = normalizeBarber(requestedBarber);
+
+    const isAnyBarber =
+      !normalized || String(normalized).toLowerCase().includes('any');
+
+    const selectedBarber = assigned || (
+      !isAnyBarber && BARBERS.includes(normalized)
+        ? normalized
+        : ''
+    );
+
+    const options = `
+      <option value="" ${selectedBarber ? '' : 'selected'}>
+        Choose a barber
+      </option>
+      ${BARBERS.map(barber => `
+        <option value="${escapeHTML(barber)}"
+          ${selectedBarber === barber ? 'selected' : ''}>
+          ${escapeHTML(barber)}
+        </option>
+      `).join('')}
+    `;
 
     const assignment = status === 'Pending'
       ? `<select class="assignment" id="barber-${booking.id}">
@@ -210,21 +272,33 @@ async function loadBookings() {
         </select>`
       : escapeHTML(assigned || 'Not assigned');
 
-   let actions = '';
+    let actions = '';
 
-if (status === 'Pending') {
-  actions = `
-    <button class="confirm" data-action="confirm"
-      data-id="${booking.id}">Confirm</button>
-    <button class="cancel" data-action="cancel"
-      data-id="${booking.id}">Cancel</button>`;
-} else if (status === 'Confirmed') {
-  actions = `
-    <button class="cancel" data-action="cancel"
-      data-id="${booking.id}">Cancel</button>`;
-} else {
-  actions = '<span class="small">Cancelled</span>';
-}
+    if (status === 'Pending') {
+      actions = `
+        <button class="confirm"
+          data-action="confirm"
+          data-id="${booking.id}">
+          Confirm
+        </button>
+
+        <button class="cancel"
+          data-action="cancel"
+          data-id="${booking.id}">
+          Cancel
+        </button>
+      `;
+    } else if (status === 'Confirmed') {
+      actions = `
+        <button class="cancel"
+          data-action="cancel"
+          data-id="${booking.id}">
+          Cancel
+        </button>
+      `;
+    } else {
+      actions = '<span class="small">Cancelled</span>';
+    }
 
     return `
       <tr>
@@ -240,7 +314,8 @@ if (status === 'Pending') {
           ${escapeHTML(status)}
         </td>
         <td>${actions}</td>
-      </tr>`;
+      </tr>
+    `;
   }).join('');
 }
 
@@ -254,58 +329,34 @@ async function updateBooking(id, action) {
     .single();
 
   if (readError || !current) {
-    showMessage('Could not load booking: ' +
-      (readError?.message || 'Booking not found.'), true);
+    showMessage(
+      'Could not load booking: ' +
+      (readError?.message || 'Booking not found.'),
+      true
+    );
     return;
   }
 
-  if (current.status !== 'Pending') {
+  if (action === 'confirm' && current.status !== 'Pending') {
     showMessage('This booking has already been processed.', true);
     await loadBookings();
     return;
   }
 
-  let updates;
-
- if (action === 'confirm') {
-  let assignedBarber = current.barber;
-
-  if (assignedBarber === 'Maher') {
-    assignedBarber = 'Maher Nayef';
-  } else if (assignedBarber === 'Nayef') {
-    assignedBarber = 'Nayef Hussein';
-  }
-
-  if (!assignedBarber ||
-      assignedBarber.toLowerCase().includes('any')) {
-    const selector = $('barber-' + id);
-    assignedBarber = selector ? selector.value : '';
-  }
-
-  if (!BARBERS.includes(assignedBarber)) {
-    showMessage('Please select a barber before confirming.', true);
+  if (action === 'cancel' && current.status === 'Cancelled') {
+    showMessage('This booking is already cancelled.', true);
     return;
   }
 
-  updates = {
-    status: 'Confirmed',
-    assigned_barber: assignedBarber,
-    duration_minutes: getDuration(current.service)
-  };
-} else {
-  updates = {
-    status: 'Cancelled'
-  };
-}
-    let assignedBarber = current.barber;
+  let updates;
 
-if (assignedBarber === 'Maher') {
-  assignedBarber = 'Maher Nayef';
-} else if (assignedBarber === 'Nayef') {
-  assignedBarber = 'Nayef Hussein';
+  if (action === 'confirm') {
+    let assignedBarber = normalizeBarber(current.barber);
 
-    if (!assignedBarber ||
-        assignedBarber.toLowerCase().includes('any')) {
+    if (
+      !assignedBarber ||
+      String(assignedBarber).toLowerCase().includes('any')
+    ) {
       const selector = $('barber-' + id);
       assignedBarber = selector ? selector.value : '';
     }
@@ -320,10 +371,14 @@ if (assignedBarber === 'Maher') {
       assigned_barber: assignedBarber,
       duration_minutes: getDuration(current.service)
     };
-  } else {
+
+  } else if (action === 'cancel') {
     updates = {
       status: 'Cancelled'
     };
+
+  } else {
+    return;
   }
 
   const {error} = await db
@@ -332,10 +387,7 @@ if (assignedBarber === 'Maher') {
     .eq('id', id);
 
   if (error) {
-    showMessage(
-      'Could not update booking: ' + error.message,
-      true
-    );
+    showMessage('Could not update booking: ' + error.message, true);
     return;
   }
 
@@ -349,17 +401,25 @@ if (assignedBarber === 'Maher') {
 }
 
 $('loginBtn').addEventListener('click', login);
+
+$('password').addEventListener('keydown', event => {
+  if (event.key === 'Enter') login();
+});
+
 $('refreshBtn').addEventListener('click', loadBookings);
 
 $('logoutBtn').addEventListener('click', async () => {
   await db.auth.signOut();
+
   $('dashboard').classList.add('hidden');
   $('loginPanel').classList.remove('hidden');
   $('password').value = '';
+  $('loginMessage').textContent = '';
 });
 
 $('bookingsBody').addEventListener('click', event => {
   const button = event.target.closest('button[data-action]');
+
   if (!button) return;
 
   updateBooking(button.dataset.id, button.dataset.action);
@@ -367,6 +427,6 @@ $('bookingsBody').addEventListener('click', event => {
 
 checkSession();
 </script>
+
 </body>
 </html>
-```
