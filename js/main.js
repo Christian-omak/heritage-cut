@@ -5,6 +5,7 @@ window.addEventListener('load', () => {
     setTimeout(() => {
         const loader = $('#ld');
         if (loader) loader.classList.add('go');
+document.body.classList.add('go');
     }, 500);
 });
 
