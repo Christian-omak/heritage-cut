@@ -75,18 +75,15 @@ const SV=['Signature Haircut','Fade or Taper','Beard Sculpting','Cut and Beard']
 
 function chips(id,arr,k){
   const box=$(id);
-
   arr.forEach(v=>{
     const b=document.createElement('button');
     b.type='button';
     b.textContent=v;
-
     b.onclick=()=>{
       S[k]=v;
       [...box.children].forEach(c=>c.classList.toggle('on',c===b));
       sum()
     };
-
     box.appendChild(b)
   })
 }
@@ -106,20 +103,16 @@ function slots(){
   const box=$('#ct');
   box.innerHTML='';
   S.t='';
-
   const today=bd.value===iso(new Date());
   const n=new Date();
 
   for(let m=600;m<=1170;m+=30){
     const b=document.createElement('button');
     b.type='button';
-
     const h=Math.floor(m/60),mi=m%60;
     b.textContent=pad(h)+':'+pad(mi);
 
-    if(today&&m<=n.getHours()*60+n.getMinutes()+15){
-      b.disabled=true;
-    }
+    if(today&&m<=n.getHours()*60+n.getMinutes()+15)b.disabled=true;
 
     b.onclick=()=>{
       S.t=b.textContent;
@@ -129,7 +122,6 @@ function slots(){
 
     box.appendChild(b)
   }
-
   sum()
 }
 
@@ -147,11 +139,11 @@ function sum(){
 
   $('#bm').textContent=(S.b&&S.s&&S.t&&d)
     ?S.s+' with '+S.b+', '+d+' at '+S.t
-    :'Pick a barber, service, date and time.';
+    :'Pick a barber, service, date and time.'
 }
 
 
-/* SUBMIT BOOKING TO SUPABASE */
+/* SAVE BOOKING TO SUPABASE */
 
 $('#bg').onclick=async()=>{
   const n=$('#bn').value.trim();
@@ -161,17 +153,17 @@ $('#bg').onclick=async()=>{
 
   if(!(S.b&&S.s&&S.t&&bd.value)){
     msg.textContent='Please choose a barber, service, date and time first.';
-    return;
+    return
   }
 
   if(!n||p.length<6){
     msg.textContent='Please add your name and phone number.';
-    return;
+    return
   }
 
   if(!window.supabaseClient){
     msg.textContent='Connection error. Please try again later.';
-    return;
+    return
   }
 
   btn.disabled=true;
@@ -190,7 +182,7 @@ $('#bg').onclick=async()=>{
         status:'Pending'
       });
 
-    if(error) throw error;
+    if(error)throw error;
 
     msg.innerHTML=
       '<strong>Booking request received!</strong><br>'+
@@ -204,7 +196,7 @@ $('#bg').onclick=async()=>{
     S.s='';
     S.t='';
 
-    document.querySelectorAll('#cb button, #cs button, #ct button')
+    document.querySelectorAll('#cb button,#cs button,#ct button')
       .forEach(b=>b.classList.remove('on'));
 
     btn.textContent='Send another request';
@@ -230,7 +222,6 @@ addEventListener('pointermove',e=>{
 
 document.querySelectorAll('h2').forEach(h=>{
   let k=0;
-
   h.innerHTML=h.innerHTML.replace(/(<[^>]+>)|([^<\s]+)/g,(m,t,w)=>
     t?t:'<w><i style="transition-delay:'+(k++*.07)+'s">'+w+'</i></w> '
   )
@@ -243,7 +234,6 @@ addEventListener('scroll',()=>{
   $('#pg').style.transform='scaleX('+(m>0?y/m:0)+')';
 
   const h=$('.hero h1');
-
   if(y<innerHeight){
     h.style.transform='translateY('+y*.22+'px)';
     $('.hero .row').style.opacity=1-y/(innerHeight*.7)
@@ -253,23 +243,19 @@ addEventListener('scroll',()=>{
 document.querySelectorAll('.btn').forEach(b=>{
   b.addEventListener('pointermove',e=>{
     const r=b.getBoundingClientRect();
-
     b.style.transform='translate('+
       (e.clientX-r.left-r.width/2)*.2+'px,'+
       (e.clientY-r.top-r.height/2)*.3+'px)'
   });
-
   b.addEventListener('pointerleave',()=>b.style.transform='')
 });
 
 document.querySelectorAll('.card').forEach(c=>{
   c.addEventListener('pointermove',e=>{
     const r=c.getBoundingClientRect();
-
     c.style.setProperty('--tx',((e.clientX-r.left)/r.width-.5)*-24+'px');
     c.style.setProperty('--ty',((e.clientY-r.top)/r.height-.5)*-24+'px')
   });
-
   c.addEventListener('pointerleave',()=>{
     c.style.setProperty('--tx','0px');
     c.style.setProperty('--ty','0px')
@@ -283,7 +269,6 @@ if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
   const cv=document.createElement('canvas');
   cv.id='dust';
   document.body.appendChild(cv);
-
   const cx=cv.getContext('2d'),P=[];
   let W,H;
 
@@ -308,22 +293,18 @@ if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
 
   (function dr(t){
     cx.clearRect(0,0,W,H);
-
     P.forEach(q=>{
       q.y-=q.v;
       q.x+=Math.sin(t/1500+q.p)*.3;
-
       if(q.y<-5){
         q.y=H+5;
         q.x=Math.random()*W
       }
-
       cx.beginPath();
       cx.arc(q.x,q.y,q.r,0,7);
       cx.fillStyle='rgba(201,163,91,'+q.a+')';
       cx.fill()
     });
-
     requestAnimationFrame(dr)
   })(0)
 }
@@ -334,20 +315,20 @@ if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
 (()=>{
   const m=document.querySelector('.mq');
   const rb=document.querySelector('.ribbon');
-
   let ly=scrollY,sk=0;
 
   (function f(){
     const v=scrollY-ly;
     ly=scrollY;
-
     sk+=(Math.max(-8,Math.min(8,v*.25))-sk)*.1;
-
     m.style.transform='skewX('+(-sk).toFixed(2)+'deg)';
-
     requestAnimationFrame(f)
   })();
 
+  addEventListener('pointermove',e=>{
+    rb.style.transform='translateX('+((e.clientX/innerWidth-.5)*-26).toFixed(1)+'px)'
+  })
+})();
   addEventListener('pointermove',e=>{
     rb.style.transform='translateX('+((e.clientX/innerWidth-.5)*-26).toFixed(1)+'px)'
   })
