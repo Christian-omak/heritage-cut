@@ -96,7 +96,7 @@ const $ = id => document.getElementById(id);
 const BARBERS = [
   'Maher Nayef',
   'Najem',
-  'Majd'
+  'Majed Nayef'
 ];
 
 function escapeHTML(value) {
@@ -115,11 +115,13 @@ function normalizeBarber(name) {
 
   if (barber === 'maher') return 'Maher Nayef';
   if (barber === 'najem') return 'Najem';
-  if (barber === 'majd') return 'Majd';
+  if (barber === 'majed' || barber === 'majed nayef') {
+    return 'Majed Nayef';
+  }
 
-  // Support older bookings made before Nayef was replaced.
-  if (barber === 'nayef' || barber === 'nayef hussein') {
-    return 'Majd';
+  // Support older bookings made before the name change.
+  if (barber === 'majd' || barber === 'nayef' || barber === 'nayef hussein') {
+    return 'Majed Nayef';
   }
 
   return name;
