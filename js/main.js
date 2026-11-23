@@ -473,6 +473,18 @@ function updateSummary() {
 }
 
 // ==========================================
+// GENERATE PRIVATE TRACKING TOKEN
+// ==========================================
+
+function generateTrackingToken() {
+    if (!window.crypto || !window.crypto.randomUUID) {
+        throw new Error('Secure tracking token generation is unavailable.');
+    }
+
+    return window.crypto.randomUUID();
+}
+
+// ==========================================
 // SUBMIT BOOKING
 // ==========================================
 
@@ -505,6 +517,8 @@ if (bookingButton) {
         bookingButton.disabled = true;
         bookingButton.textContent = 'Checking availability...';
 
+        let redirecting = false;
+
         try {
             const latestBookings = await getConfirmedBookings(
                 dateInput.value
@@ -520,6 +534,10 @@ if (bookingButton) {
 
             bookingButton.textContent = 'Submitting...';
 
+            // Generate a unique private tracking token.
+            const trackingToken = generateTrackingToken();
+
+            // Save the booking and its tracking token together.
             const { error } = await window.supabaseClient
                 .from('bookings')
                 .insert([{
@@ -529,37 +547,30 @@ if (bookingButton) {
                     service: S.service,
                     appointment_date: dateInput.value,
                     appointment_time: S.time,
-                    status: 'Pending'
+                    status: 'Pending',
+                    tracking_token: trackingToken
                 }]);
 
             if (error) throw error;
 
-            message.textContent =
-                'Booking request received! Thank you! Your request has been submitted. We will contact you shortly to confirm your appointment.';
+            // Redirect the customer to their private status page.
+            redirecting = true;
+            bookingButton.textContent = 'Opening your booking...';
 
-            $('#bn').value = '';
-            $('#bp').value = '';
-
-            S.barber = '';
-            S.service = '';
-            S.time = '';
-
-            document.querySelectorAll(
-                '#cb button, #cs button, #ct button'
-            ).forEach(button => {
-                button.classList.remove('on');
-            });
-
-            createTimeSlots();
+            window.location.href =
+                `booking-status.html?token=${encodeURIComponent(trackingToken)}`;
 
         } catch (error) {
             console.error('Booking error:', error);
 
             message.textContent =
                 'Could not save your booking. Please try again.';
+
         } finally {
-            bookingButton.disabled = false;
-            bookingButton.textContent = 'Send booking request';
+            if (!redirecting) {
+                bookingButton.disabled = false;
+                bookingButton.textContent = 'Send booking request';
+            }
         }
     });
 }
