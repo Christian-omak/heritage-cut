@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Heritage Cut | Admin</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101010;color:#eee;font-family:Arial,sans-serif;padding:25px}
@@ -36,7 +34,6 @@ th{color:#d5b47a}
 @media(max-width:600px){body{padding:12px}.panel{padding:15px}}
 </style>
 </head>
-
 <body>
 <div class="container">
 
@@ -45,24 +42,18 @@ th{color:#d5b47a}
 
 <section id="loginPanel" class="panel">
 <h2>Administrator Login</h2>
-
 <input id="email" type="email" placeholder="Admin email">
 <input id="password" type="password" placeholder="Password">
-
 <button class="primary" id="loginBtn">Log In</button>
-
 <div id="loginMessage" class="message"></div>
 </section>
 
 <section id="dashboard" class="hidden">
-
 <div class="panel">
 <h2>Bookings</h2>
 <p class="small">Confirm or cancel customer appointment requests.</p>
-
 <button class="primary" id="refreshBtn">Refresh Bookings</button>
 <button class="logout" id="logoutBtn">Log Out</button>
-
 <div id="message" class="message"></div>
 </div>
 
@@ -82,21 +73,17 @@ th{color:#d5b47a}
 <th>Actions</th>
 </tr>
 </thead>
-
 <tbody id="bookingsBody">
 <tr><td colspan="10">Loading bookings...</td></tr>
 </tbody>
 </table>
 </div>
-
 </section>
 </div>
 
 <script>
 const SUPABASE_URL = 'https://zqkrnnllqznseezlxlyo.supabase.co';
-
 const SUPABASE_KEY = 'sb_publishable_22sfkbflstpyAcPm-xDqsg_kmCISgOM';
-
 const ADMIN_UID = '322779e8-2fca-4b79-b5cf-1de4df79456e';
 
 const db = window.supabase.createClient(
@@ -109,7 +96,7 @@ const $ = id => document.getElementById(id);
 const BARBERS = [
   'Maher Nayef',
   'Najem',
-  'Nayef Hussein'
+  'Majd'
 ];
 
 function escapeHTML(value) {
@@ -122,37 +109,42 @@ function escapeHTML(value) {
   })[char]);
 }
 
-function getDuration(service) {
-  const s = String(service || '').toLowerCase();
-
-  if (
-    s.includes('cut and beard') ||
-    s.includes('haircut and beard') ||
-    s.includes('haircut & beard') ||
-    s.includes('combo')
-  ) {
-    return 60;
-  }
-
-  if (s.includes('fade') || s.includes('taper')) {
-    return 45;
-  }
-
-  if (s.includes('beard')) {
-    return 30;
-  }
-
-  return 30;
-}
-
+// Convert customer-facing names into admin names.
 function normalizeBarber(name) {
   const barber = String(name || '').trim().toLowerCase();
 
   if (barber === 'maher') return 'Maher Nayef';
   if (barber === 'najem') return 'Najem';
-  if (barber === 'nayef') return 'Nayef Hussein';
+  if (barber === 'majd') return 'Majd';
+
+  // Support older bookings made before Nayef was replaced.
+  if (barber === 'nayef' || barber === 'nayef hussein') {
+    return 'Majd';
+  }
 
   return name;
+}
+
+// Service durations in minutes.
+function getDuration(service) {
+  const s = String(service || '').toLowerCase().trim();
+
+  if (
+    s.includes('haircut + beard') ||
+    s.includes('haircut and beard') ||
+    s.includes('cut and beard')
+  ) {
+    return 45;
+  }
+
+  if (
+    s === 'beard' ||
+    s.includes('beard sculpting')
+  ) {
+    return 15;
+  }
+
+  return 30;
 }
 
 function showMessage(message, isError = false) {
@@ -165,7 +157,8 @@ async function login() {
   const password = $('password').value;
 
   if (!email || !password) {
-    $('loginMessage').textContent = 'Please enter your email and password.';
+    $('loginMessage').textContent =
+      'Please enter your email and password.';
     return;
   }
 
@@ -206,7 +199,6 @@ async function checkSession() {
     if (data.session && data.session.user.id === ADMIN_UID) {
       $('loginPanel').classList.add('hidden');
       $('dashboard').classList.remove('hidden');
-
       await loadBookings();
     }
   } catch (error) {
@@ -246,7 +238,8 @@ async function loadBookings() {
     const normalized = normalizeBarber(requestedBarber);
 
     const isAnyBarber =
-      !normalized || String(normalized).toLowerCase().includes('any');
+      !normalized ||
+      String(normalized).toLowerCase().includes('any');
 
     const selectedBarber = assigned || (
       !isAnyBarber && BARBERS.includes(normalized)
@@ -278,23 +271,16 @@ async function loadBookings() {
       actions = `
         <button class="confirm"
           data-action="confirm"
-          data-id="${booking.id}">
-          Confirm
-        </button>
-
+          data-id="${booking.id}">Confirm</button>
         <button class="cancel"
           data-action="cancel"
-          data-id="${booking.id}">
-          Cancel
-        </button>
+          data-id="${booking.id}">Cancel</button>
       `;
     } else if (status === 'Confirmed') {
       actions = `
         <button class="cancel"
           data-action="cancel"
-          data-id="${booking.id}">
-          Cancel
-        </button>
+          data-id="${booking.id}">Cancel</button>
       `;
     } else {
       actions = '<span class="small">Cancelled</span>';
@@ -427,6 +413,5 @@ $('bookingsBody').addEventListener('click', event => {
 
 checkSession();
 </script>
-
 </body>
 </html>
