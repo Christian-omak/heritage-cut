@@ -3,417 +3,1421 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Heritage Cut | Admin</title>
+<title>Heritage Cut | Admin Dashboard</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#101010;color:#eee;font-family:Arial,sans-serif;padding:25px}
-.container{max-width:1200px;margin:auto}
-h1{color:#d5b47a}
-.subtitle{color:#999;margin-bottom:30px}
-.panel{background:#1b1b1b;border:1px solid #333;border-radius:12px;padding:24px;margin-bottom:20px}
-input,select{background:#111;color:white;border:1px solid #444;padding:12px;border-radius:6px;width:100%;margin:8px 0}
-button{padding:11px 16px;border:0;border-radius:6px;cursor:pointer;font-weight:bold;margin:4px}
-button:disabled{opacity:.5;cursor:not-allowed}
-.primary{background:#d5b47a;color:#111}
-.confirm{background:#287c4b;color:white}
-.cancel{background:#9d3434;color:white}
-.logout{background:#333;color:white}
-table{width:100%;border-collapse:collapse;min-width:950px}
-th,td{text-align:left;padding:14px;border-bottom:1px solid #333;vertical-align:middle}
-th{color:#d5b47a}
-.table-wrap{overflow-x:auto}
-.status{font-weight:bold}
-.pending{color:#e6bd65}
-.confirmed{color:#62d995}
-.cancelled{color:#ff7777}
-.hidden{display:none}
-.message{margin-top:15px;color:#d5b47a;white-space:pre-wrap}
-.small{color:#aaa;font-size:13px}
-.assignment{min-width:150px}
-@media(max-width:600px){body{padding:12px}.panel{padding:15px}}
+:root {
+    --bg: #101010;
+    --panel: #191919;
+    --panel2: #202020;
+    --border: #303030;
+    --gold: #d5b47a;
+    --text: #f3f0e9;
+    --muted: #929292;
+    --green: #62d995;
+    --red: #ff7777;
+    --yellow: #e6bd65;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+}
+
+button, input, select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* LOGIN */
+
+.login-screen {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 38px;
+}
+
+.logo {
+    color: var(--gold);
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: 4px;
+}
+
+.login-card h2 {
+    margin-top: 35px;
+    font-size: 23px;
+}
+
+.login-card p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+input, select {
+    width: 100%;
+    padding: 13px;
+    margin-top: 10px;
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: white;
+    outline: none;
+}
+
+input:focus, select:focus {
+    border-color: var(--gold);
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.primary {
+    background: var(--gold);
+    color: #111;
+    border: none;
+    padding: 12px 17px;
+    border-radius: 7px;
+    font-weight: bold;
+}
+
+.login-card .primary {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.message {
+    margin-top: 15px;
+    color: var(--gold);
+    font-size: 13px;
+    white-space: pre-wrap;
+}
+
+/* MAIN LAYOUT */
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 245px;
+    background: #151515;
+    border-right: 1px solid var(--border);
+    padding: 30px 20px;
+    flex-shrink: 0;
+}
+
+.sidebar .logo {
+    font-size: 19px;
+    letter-spacing: 2px;
+    padding: 0 10px 35px;
+}
+
+.sidebar-label {
+    color: #666;
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin: 15px 10px;
+}
+
+.nav-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    color: #aaa;
+    background: transparent;
+    border: none;
+    padding: 14px 12px;
+    border-radius: 7px;
+    margin: 4px 0;
+}
+
+.nav-item.active {
+    background: #29251e;
+    color: var(--gold);
+}
+
+.sidebar-bottom {
+    margin-top: 50px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+}
+
+.logout {
+    width: 100%;
+    background: #292929;
+    color: #ddd;
+    border: none;
+    padding: 13px;
+    border-radius: 7px;
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+    padding: 35px;
+    max-width: 1700px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.topbar h1 {
+    font-size: 27px;
+    margin: 0;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.live-indicator {
+    color: var(--green);
+    font-size: 12px;
+}
+
+/* STATISTICS */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 17px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.stat-note {
+    color: #777;
+    font-size: 11px;
+    margin-top: 8px;
+}
+
+.gold {
+    color: var(--gold);
+}
+
+.green {
+    color: var(--green);
+}
+
+.yellow {
+    color: var(--yellow);
+}
+
+.red {
+    color: var(--red);
+}
+
+/* APPOINTMENTS */
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.section-heading h2 {
+    font-size: 19px;
+    margin: 0;
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+}
+
+.toolbar {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.toolbar input,
+.toolbar select {
+    margin: 0;
+    min-width: 0;
+}
+
+.refresh {
+    background: #303030;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 7px;
+    padding: 0 17px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1050px;
+}
+
+th {
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 15px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+td {
+    padding: 16px 12px;
+    border-bottom: 1px solid #292929;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+tbody tr:hover {
+    background: #222;
+}
+
+.customer-name {
+    font-weight: bold;
+    color: white;
+}
+
+.customer-phone {
+    color: var(--muted);
+    margin-top: 5px;
+    font-size: 11px;
+}
+
+.assignment {
+    min-width: 145px;
+    padding: 9px;
+    margin: 0;
+}
+
+.status {
+    display: inline-block;
+    padding: 7px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.status.pending {
+    color: var(--yellow);
+    background: #3b3220;
+}
+
+.status.confirmed {
+    color: var(--green);
+    background: #193526;
+}
+
+.status.cancelled {
+    color: var(--red);
+    background: #3a2020;
+}
+
+.actions {
+    white-space: nowrap;
+}
+
+.confirm, .cancel {
+    border: none;
+    border-radius: 5px;
+    padding: 9px 11px;
+    font-size: 11px;
+    font-weight: bold;
+    margin: 2px;
+}
+
+.confirm {
+    background: #287c4b;
+    color: white;
+}
+
+.cancel {
+    background: #8e3434;
+    color: white;
+}
+
+.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 40px;
+}
+
+.small {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+@media(max-width:1100px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .toolbar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .toolbar input:first-child {
+        grid-column: span 2;
+    }
+}
+
+@media(max-width:750px) {
+    .layout {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 15px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar .logo {
+        padding: 5px 5px 15px;
+    }
+
+    .sidebar-label {
+        display: none;
+    }
+
+    .nav-item {
+        display: inline-block;
+        width: auto;
+        padding: 10px;
+    }
+
+    .sidebar-bottom {
+        display: inline-block;
+        border: none;
+        padding: 0;
+        margin: 0 0 0 5px;
+    }
+
+    .logout {
+        padding: 10px;
+    }
+
+    .main {
+        padding: 20px 13px;
+    }
+
+    .topbar {
+        align-items: flex-start;
+    }
+
+    .topbar h1 {
+        font-size: 22px;
+    }
+
+    .stats {
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-number {
+        font-size: 26px;
+    }
+
+    .panel {
+        padding: 13px;
+    }
+
+    .toolbar {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .toolbar input:first-child {
+        grid-column: span 2;
+    }
+
+    .refresh {
+        min-height: 43px;
+    }
+}
+
+@media(max-width:420px) {
+    .stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .toolbar input:first-child {
+        grid-column: auto;
+    }
+}
 </style>
 </head>
+
 <body>
-<div class="container">
 
-<h1>HERITAGE CUT</h1>
-<p class="subtitle">Booking Management Dashboard</p>
+<!-- LOGIN -->
 
-<section id="loginPanel" class="panel">
-<h2>Administrator Login</h2>
-<input id="email" type="email" placeholder="Admin email">
-<input id="password" type="password" placeholder="Password">
-<button class="primary" id="loginBtn">Log In</button>
-<div id="loginMessage" class="message"></div>
+<section id="loginPanel" class="login-screen">
+
+    <div class="login-card">
+
+        <div class="logo">HERITAGE CUT</div>
+
+        <h2>Welcome back.</h2>
+
+        <p>Sign in to manage your barbershop appointments.</p>
+
+        <input id="email" type="email" placeholder="Admin email">
+
+        <input id="password" type="password" placeholder="Password">
+
+        <button class="primary" id="loginBtn">Sign In</button>
+
+        <div id="loginMessage" class="message"></div>
+
+    </div>
+
 </section>
 
-<section id="dashboard" class="hidden">
-<div class="panel">
-<h2>Bookings</h2>
-<p class="small">Confirm or cancel customer appointment requests.</p>
-<button class="primary" id="refreshBtn">Refresh Bookings</button>
-<button class="logout" id="logoutBtn">Log Out</button>
-<div id="message" class="message"></div>
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="layout hidden">
+
+    <aside class="sidebar">
+
+        <div class="logo">HERITAGE CUT</div>
+
+        <div class="sidebar-label">MANAGEMENT</div>
+
+        <button class="nav-item active">
+            ◈ &nbsp; Overview
+        </button>
+
+        <button class="nav-item" id="appointmentsNav">
+            ▣ &nbsp; Appointments
+        </button>
+
+        <div class="sidebar-bottom">
+            <button class="logout" id="logoutBtn">
+                Log Out
+            </button>
+        </div>
+
+    </aside>
+
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Dashboard</h1>
+                <div class="subtitle">
+                    Welcome to your Heritage Cut management panel.
+                </div>
+            </div>
+
+            <div class="live-indicator">
+                ● ADMIN ACCESS
+            </div>
+
+        </header>
+
+
+        <!-- STATISTICS -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <div class="stat-label">TOTAL BOOKINGS</div>
+                <div class="stat-number gold" id="totalBookings">0</div>
+                <div class="stat-note">All appointments</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">TODAY'S APPOINTMENTS</div>
+                <div class="stat-number" id="todayBookings">0</div>
+                <div class="stat-note">Scheduled for today</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">PENDING REQUESTS</div>
+                <div class="stat-number yellow" id="pendingBookings">0</div>
+                <div class="stat-note">Awaiting your approval</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">CONFIRMED BOOKINGS</div>
+                <div class="stat-number green" id="confirmedBookings">0</div>
+                <div class="stat-note">Accepted appointments</div>
+            </div>
+
+        </section>
+
+
+        <!-- APPOINTMENTS -->
+
+        <section class="panel" id="appointmentsSection">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Appointments</h2>
+                    <p class="small">
+                        Manage and organize customer bookings.
+                    </p>
+                </div>
+
+                <button class="primary" id="refreshBtn">
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+            <!-- SEARCH AND FILTERS -->
+
+            <div class="toolbar">
+
+                <input
+                    id="searchInput"
+                    type="search"
+                    placeholder="Search customer or phone..."
+                >
+
+                <select id="statusFilter">
+                    <option value="all">All statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+
+                <select id="barberFilter">
+                    <option value="all">All barbers</option>
+                    <option value="Maher Nayef">Maher Nayef</option>
+                    <option value="Najem">Najem</option>
+                    <option value="Majed Nayef">Majed Nayef</option>
+                </select>
+
+                <input type="date" id="dateFilter">
+
+                <button class="refresh" id="clearFilters">
+                    Clear filters
+                </button>
+
+            </div>
+
+
+            <div id="message" class="message"></div>
+
+
+            <!-- TABLE -->
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Requested barber</th>
+                            <th>Assigned barber</th>
+                            <th>Service</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="bookingsBody">
+                        <tr>
+                            <td colspan="9" class="empty">
+                                Loading bookings...
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <div class="small">
+            HERITAGE CUT · BEIT EL CHAAR
+        </div>
+
+    </main>
+
 </div>
 
-<div class="panel table-wrap">
-<table>
-<thead>
-<tr>
-<th>Customer</th>
-<th>Phone</th>
-<th>Requested Barber</th>
-<th>Assigned Barber</th>
-<th>Service</th>
-<th>Date</th>
-<th>Time</th>
-<th>Duration</th>
-<th>Status</th>
-<th>Actions</th>
-</tr>
-</thead>
-<tbody id="bookingsBody">
-<tr><td colspan="10">Loading bookings...</td></tr>
-</tbody>
-</table>
-</div>
-</section>
-</div>
 
 <script>
-const SUPABASE_URL = 'https://zqkrnnllqznseezlxlyo.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_22sfkbflstpyAcPm-xDqsg_kmCISgOM';
-const ADMIN_UID = '322779e8-2fca-4b79-b5cf-1de4df79456e';
+
+// ==========================================
+// SUPABASE CONFIGURATION
+// ==========================================
+
+const SUPABASE_URL =
+    'https://zqkrnnllqznseezlxlyo.supabase.co';
+
+const SUPABASE_KEY =
+    'sb_publishable_22sfkbflstpyAcPm-xDqsg_kmCISgOM';
+
+const ADMIN_UID =
+    '322779e8-2fca-4b79-b5cf-1de4df79456e';
 
 const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
 const $ = id => document.getElementById(id);
 
+
+// ==========================================
+// DATA
+// ==========================================
+
 const BARBERS = [
-  'Maher Nayef',
-  'Najem',
-  'Majed Nayef'
+    'Maher Nayef',
+    'Najem',
+    'Majed Nayef'
 ];
 
+let allBookings = [];
+
+
+// ==========================================
+// HELPERS
+// ==========================================
+
 function escapeHTML(value) {
-  return String(value ?? '').replace(/[&<>"']/g, char => ({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
-    "'":'&#039;'
-  })[char]);
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    })[char]);
 }
 
-// Convert customer-facing names into admin names.
 function normalizeBarber(name) {
-  const barber = String(name || '').trim().toLowerCase();
+    const barber = String(name || '').trim().toLowerCase();
 
-  if (barber === 'maher') return 'Maher Nayef';
-  if (barber === 'najem') return 'Najem';
-  if (barber === 'majed' || barber === 'majed nayef') {
-    return 'Majed Nayef';
-  }
+    if (barber === 'maher') return 'Maher Nayef';
 
-  // Support older bookings made before the name change.
-  if (barber === 'majd' || barber === 'nayef' || barber === 'nayef hussein') {
-    return 'Majed Nayef';
-  }
+    if (barber === 'najem') return 'Najem';
 
-  return name;
-}
-
-// Service durations in minutes.
-function getDuration(service) {
-  const s = String(service || '').toLowerCase().trim();
-
-  if (
-    s.includes('haircut + beard') ||
-    s.includes('haircut and beard') ||
-    s.includes('cut and beard')
-  ) {
-    return 45;
-  }
-
-  if (
-    s === 'beard' ||
-    s.includes('beard sculpting')
-  ) {
-    return 15;
-  }
-
-  return 30;
-}
-
-function showMessage(message, isError = false) {
-  $('message').textContent = message;
-  $('message').style.color = isError ? '#ff7777' : '#d5b47a';
-}
-
-async function login() {
-  const email = $('email').value.trim();
-  const password = $('password').value;
-
-  if (!email || !password) {
-    $('loginMessage').textContent =
-      'Please enter your email and password.';
-    return;
-  }
-
-  $('loginBtn').disabled = true;
-  $('loginMessage').textContent = 'Logging in...';
-
-  try {
-    const {data, error} = await db.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) throw error;
-
-    if (!data.user || data.user.id !== ADMIN_UID) {
-      await db.auth.signOut();
-      throw new Error('This account is not authorized.');
+    if (barber === 'majed' || barber === 'majed nayef') {
+        return 'Majed Nayef';
     }
-
-    $('loginPanel').classList.add('hidden');
-    $('dashboard').classList.remove('hidden');
-
-    await loadBookings();
-
-  } catch (error) {
-    $('loginMessage').textContent = error.message;
-  } finally {
-    $('loginBtn').disabled = false;
-  }
-}
-
-async function checkSession() {
-  try {
-    const {data, error} = await db.auth.getSession();
-
-    if (error) throw error;
-
-    if (data.session && data.session.user.id === ADMIN_UID) {
-      $('loginPanel').classList.add('hidden');
-      $('dashboard').classList.remove('hidden');
-      await loadBookings();
-    }
-  } catch (error) {
-    $('loginMessage').textContent = error.message;
-  }
-}
-
-async function loadBookings() {
-  $('bookingsBody').innerHTML =
-    '<tr><td colspan="10">Loading bookings...</td></tr>';
-
-  const {data, error} = await db
-    .from('bookings')
-    .select('*')
-    .order('created_at', {ascending:false});
-
-  if (error) {
-    $('bookingsBody').innerHTML =
-      '<tr><td colspan="10">Error: ' +
-      escapeHTML(error.message) + '</td></tr>';
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    $('bookingsBody').innerHTML =
-      '<tr><td colspan="10">No bookings found.</td></tr>';
-    return;
-  }
-
-  $('bookingsBody').innerHTML = data.map(booking => {
-    const status = booking.status || 'Pending';
-    const requestedBarber = booking.barber || '';
-    const assigned = booking.assigned_barber || '';
-    const duration =
-      booking.duration_minutes || getDuration(booking.service);
-
-    const normalized = normalizeBarber(requestedBarber);
-
-    const isAnyBarber =
-      !normalized ||
-      String(normalized).toLowerCase().includes('any');
-
-    const selectedBarber = assigned || (
-      !isAnyBarber && BARBERS.includes(normalized)
-        ? normalized
-        : ''
-    );
-
-    const options = `
-      <option value="" ${selectedBarber ? '' : 'selected'}>
-        Choose a barber
-      </option>
-      ${BARBERS.map(barber => `
-        <option value="${escapeHTML(barber)}"
-          ${selectedBarber === barber ? 'selected' : ''}>
-          ${escapeHTML(barber)}
-        </option>
-      `).join('')}
-    `;
-
-    const assignment = status === 'Pending'
-      ? `<select class="assignment" id="barber-${booking.id}">
-          ${options}
-        </select>`
-      : escapeHTML(assigned || 'Not assigned');
-
-    let actions = '';
-
-    if (status === 'Pending') {
-      actions = `
-        <button class="confirm"
-          data-action="confirm"
-          data-id="${booking.id}">Confirm</button>
-        <button class="cancel"
-          data-action="cancel"
-          data-id="${booking.id}">Cancel</button>
-      `;
-    } else if (status === 'Confirmed') {
-      actions = `
-        <button class="cancel"
-          data-action="cancel"
-          data-id="${booking.id}">Cancel</button>
-      `;
-    } else {
-      actions = '<span class="small">Cancelled</span>';
-    }
-
-    return `
-      <tr>
-        <td>${escapeHTML(booking.customer_name)}</td>
-        <td>${escapeHTML(booking.phone)}</td>
-        <td>${escapeHTML(requestedBarber)}</td>
-        <td>${assignment}</td>
-        <td>${escapeHTML(booking.service)}</td>
-        <td>${escapeHTML(booking.appointment_date)}</td>
-        <td>${escapeHTML(booking.appointment_time)}</td>
-        <td>${duration} min</td>
-        <td class="status ${status.toLowerCase()}">
-          ${escapeHTML(status)}
-        </td>
-        <td>${actions}</td>
-      </tr>
-    `;
-  }).join('');
-}
-
-async function updateBooking(id, action) {
-  showMessage('Updating booking...');
-
-  const {data: current, error: readError} = await db
-    .from('bookings')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  if (readError || !current) {
-    showMessage(
-      'Could not load booking: ' +
-      (readError?.message || 'Booking not found.'),
-      true
-    );
-    return;
-  }
-
-  if (action === 'confirm' && current.status !== 'Pending') {
-    showMessage('This booking has already been processed.', true);
-    await loadBookings();
-    return;
-  }
-
-  if (action === 'cancel' && current.status === 'Cancelled') {
-    showMessage('This booking is already cancelled.', true);
-    return;
-  }
-
-  let updates;
-
-  if (action === 'confirm') {
-    let assignedBarber = normalizeBarber(current.barber);
 
     if (
-      !assignedBarber ||
-      String(assignedBarber).toLowerCase().includes('any')
+        barber === 'majd' ||
+        barber === 'nayef' ||
+        barber === 'nayef hussein'
     ) {
-      const selector = $('barber-' + id);
-      assignedBarber = selector ? selector.value : '';
+        return 'Majed Nayef';
     }
 
-    if (!BARBERS.includes(assignedBarber)) {
-      showMessage('Please select a barber before confirming.', true);
-      return;
-    }
-
-    updates = {
-      status: 'Confirmed',
-      assigned_barber: assignedBarber,
-      duration_minutes: getDuration(current.service)
-    };
-
-  } else if (action === 'cancel') {
-    updates = {
-      status: 'Cancelled'
-    };
-
-  } else {
-    return;
-  }
-
-  const {error} = await db
-    .from('bookings')
-    .update(updates)
-    .eq('id', id);
-
-  if (error) {
-    showMessage('Could not update booking: ' + error.message, true);
-    return;
-  }
-
-  showMessage(
-    action === 'confirm'
-      ? 'Booking confirmed successfully!'
-      : 'Booking cancelled successfully!'
-  );
-
-  await loadBookings();
+    return name;
 }
+
+function getDuration(service) {
+    const s = String(service || '').toLowerCase().trim();
+
+    if (
+        s.includes('haircut + beard') ||
+        s.includes('haircut and beard') ||
+        s.includes('cut and beard')
+    ) {
+        return 45;
+    }
+
+    if (s === 'beard' || s.includes('beard sculpting')) {
+        return 15;
+    }
+
+    return 30;
+}
+
+function getToday() {
+    const today = new Date();
+
+    return [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, '0'),
+        String(today.getDate()).padStart(2, '0')
+    ].join('-');
+}
+
+function showMessage(message, error = false) {
+    $('message').textContent = message;
+
+    $('message').style.color = error
+        ? '#ff7777'
+        : '#d5b47a';
+}
+
+
+// ==========================================
+// LOGIN
+// ==========================================
+
+async function login() {
+
+    const email = $('email').value.trim();
+    const password = $('password').value;
+
+    if (!email || !password) {
+        $('loginMessage').textContent =
+            'Please enter your email and password.';
+        return;
+    }
+
+    $('loginBtn').disabled = true;
+    $('loginMessage').textContent = 'Signing in...';
+
+    try {
+
+        const { data, error } = await db.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) throw error;
+
+        if (!data.user || data.user.id !== ADMIN_UID) {
+
+            await db.auth.signOut();
+
+            throw new Error('This account is not authorized.');
+        }
+
+        $('loginPanel').classList.add('hidden');
+        $('dashboard').classList.remove('hidden');
+
+        await loadBookings();
+
+    } catch (error) {
+
+        $('loginMessage').textContent = error.message;
+
+    } finally {
+
+        $('loginBtn').disabled = false;
+
+    }
+}
+
+
+// ==========================================
+// CHECK SESSION
+// ==========================================
+
+async function checkSession() {
+
+    try {
+
+        const { data, error } = await db.auth.getSession();
+
+        if (error) throw error;
+
+        if (data.session) {
+
+            if (data.session.user.id !== ADMIN_UID) {
+                await db.auth.signOut();
+                return;
+            }
+
+            $('loginPanel').classList.add('hidden');
+            $('dashboard').classList.remove('hidden');
+
+            await loadBookings();
+        }
+
+    } catch (error) {
+
+        $('loginMessage').textContent = error.message;
+
+    }
+}
+
+
+// ==========================================
+// LOAD BOOKINGS
+// ==========================================
+
+async function loadBookings() {
+
+    $('bookingsBody').innerHTML = `
+        <tr>
+            <td colspan="9" class="empty">
+                Loading appointments...
+            </td>
+        </tr>
+    `;
+
+    const { data, error } = await db
+        .from('bookings')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+
+        $('bookingsBody').innerHTML = `
+            <tr>
+                <td colspan="9" class="empty">
+                    ${escapeHTML(error.message)}
+                </td>
+            </tr>
+        `;
+
+        showMessage('Could not load bookings.', true);
+
+        return;
+    }
+
+    allBookings = data || [];
+
+    updateStatistics();
+    renderBookings();
+
+    showMessage('Bookings updated successfully.');
+}
+
+
+// ==========================================
+// STATISTICS
+// ==========================================
+
+function updateStatistics() {
+
+    const today = getToday();
+
+    $('totalBookings').textContent =
+        allBookings.length;
+
+    $('todayBookings').textContent =
+        allBookings.filter(booking =>
+            booking.appointment_date === today &&
+            booking.status !== 'Cancelled'
+        ).length;
+
+    $('pendingBookings').textContent =
+        allBookings.filter(booking =>
+            booking.status === 'Pending'
+        ).length;
+
+    $('confirmedBookings').textContent =
+        allBookings.filter(booking =>
+            booking.status === 'Confirmed'
+        ).length;
+}
+
+
+// ==========================================
+// FILTER BOOKINGS
+// ==========================================
+
+function getFilteredBookings() {
+
+    const search = $('searchInput').value
+        .trim()
+        .toLowerCase();
+
+    const status = $('statusFilter').value;
+    const barber = $('barberFilter').value;
+    const date = $('dateFilter').value;
+
+    return allBookings.filter(booking => {
+
+        const customer = String(
+            booking.customer_name || ''
+        ).toLowerCase();
+
+        const phone = String(
+            booking.phone || ''
+        ).toLowerCase();
+
+        const matchesSearch =
+            !search ||
+            customer.includes(search) ||
+            phone.includes(search);
+
+        const matchesStatus =
+            status === 'all' ||
+            booking.status === status;
+
+        const assigned =
+            normalizeBarber(booking.assigned_barber || booking.barber);
+
+        const matchesBarber =
+            barber === 'all' ||
+            assigned === barber;
+
+        const matchesDate =
+            !date ||
+            booking.appointment_date === date;
+
+        return (
+            matchesSearch &&
+            matchesStatus &&
+            matchesBarber &&
+            matchesDate
+        );
+
+    });
+}
+
+
+// ==========================================
+// DISPLAY BOOKINGS
+// ==========================================
+
+function renderBookings() {
+
+    const bookings = getFilteredBookings();
+
+    if (!bookings.length) {
+
+        $('bookingsBody').innerHTML = `
+            <tr>
+                <td colspan="9" class="empty">
+                    No appointments match your filters.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    $('bookingsBody').innerHTML = bookings.map(booking => {
+
+        const status = booking.status || 'Pending';
+
+        const requestedBarber = booking.barber || '';
+
+        const assigned = booking.assigned_barber || '';
+
+        const normalized = normalizeBarber(requestedBarber);
+
+        const isAnyBarber =
+            !normalized ||
+            String(normalized).toLowerCase().includes('any');
+
+        const selectedBarber = assigned || (
+            !isAnyBarber && BARBERS.includes(normalized)
+                ? normalized
+                : ''
+        );
+
+        const duration =
+            booking.duration_minutes ||
+            getDuration(booking.service);
+
+        const options = `
+            <option value="">
+                Choose a barber
+            </option>
+
+            ${BARBERS.map(barber => `
+                <option
+                    value="${escapeHTML(barber)}"
+                    ${selectedBarber === barber ? 'selected' : ''}
+                >
+                    ${escapeHTML(barber)}
+                </option>
+            `).join('')}
+        `;
+
+        let assignment;
+
+        if (status === 'Pending') {
+
+            assignment = `
+                <select
+                    class="assignment"
+                    id="barber-${escapeHTML(booking.id)}"
+                >
+                    ${options}
+                </select>
+            `;
+
+        } else {
+
+            assignment = escapeHTML(
+                assigned || 'Not assigned'
+            );
+
+        }
+
+        let actions = '';
+
+        if (status === 'Pending') {
+
+            actions = `
+                <button
+                    class="confirm"
+                    data-action="confirm"
+                    data-id="${escapeHTML(booking.id)}"
+                >
+                    Confirm
+                </button>
+
+                <button
+                    class="cancel"
+                    data-action="cancel"
+                    data-id="${escapeHTML(booking.id)}"
+                >
+                    Cancel
+                </button>
+            `;
+
+        } else if (status === 'Confirmed') {
+
+            actions = `
+                <button
+                    class="cancel"
+                    data-action="cancel"
+                    data-id="${escapeHTML(booking.id)}"
+                >
+                    Cancel
+                </button>
+            `;
+
+        } else {
+
+            actions = `
+                <span class="small">No actions</span>
+            `;
+
+        }
+
+        const statusClass = String(status).toLowerCase();
+
+        return `
+            <tr>
+
+                <td>
+                    <div class="customer-name">
+                        ${escapeHTML(booking.customer_name)}
+                    </div>
+
+                    <div class="customer-phone">
+                        ${escapeHTML(booking.phone)}
+                    </div>
+                </td>
+
+                <td>
+                    ${escapeHTML(requestedBarber)}
+                </td>
+
+                <td>
+                    ${assignment}
+                </td>
+
+                <td>
+                    ${escapeHTML(booking.service)}
+                </td>
+
+                <td>
+                    ${escapeHTML(booking.appointment_date)}
+                </td>
+
+                <td>
+                    ${escapeHTML(booking.appointment_time)}
+                </td>
+
+                <td>
+                    ${duration} min
+                </td>
+
+                <td>
+                    <span class="status ${escapeHTML(statusClass)}">
+                        ${escapeHTML(status)}
+                    </span>
+                </td>
+
+                <td class="actions">
+                    ${actions}
+                </td>
+
+            </tr>
+        `;
+
+    }).join('');
+
+}
+
+
+// ==========================================
+// CONFIRM OR CANCEL BOOKING
+// ==========================================
+
+async function updateBooking(id, action, button) {
+
+    if (button) button.disabled = true;
+
+    showMessage('Updating appointment...');
+
+    try {
+
+        const { data: current, error: readError } = await db
+            .from('bookings')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (readError || !current) {
+
+            throw new Error(
+                readError?.message || 'Booking not found.'
+            );
+
+        }
+
+        if (action === 'confirm' && current.status !== 'Pending') {
+
+            throw new Error(
+                'This booking has already been processed.'
+            );
+
+        }
+
+        if (action === 'cancel' && current.status === 'Cancelled') {
+
+            throw new Error(
+                'This booking is already cancelled.'
+            );
+
+        }
+
+        let updates;
+
+        if (action === 'confirm') {
+
+            let assignedBarber = normalizeBarber(current.barber);
+
+            if (
+                !assignedBarber ||
+                String(assignedBarber).toLowerCase().includes('any')
+            ) {
+
+                const selector = $('barber-' + id);
+
+                assignedBarber = selector
+                    ? selector.value
+                    : '';
+
+            }
+
+            if (!BARBERS.includes(assignedBarber)) {
+
+                throw new Error(
+                    'Please select a barber before confirming.'
+                );
+
+            }
+
+            updates = {
+                status: 'Confirmed',
+                assigned_barber: assignedBarber,
+                duration_minutes: getDuration(current.service)
+            };
+
+        } else if (action === 'cancel') {
+
+            updates = {
+                status: 'Cancelled'
+            };
+
+        } else {
+
+            return;
+
+        }
+
+        const { error } = await db
+            .from('bookings')
+            .update(updates)
+            .eq('id', id);
+
+        if (error) throw error;
+
+        showMessage(
+            action === 'confirm'
+                ? 'Appointment confirmed successfully!'
+                : 'Appointment cancelled successfully!'
+        );
+
+        await loadBookings();
+
+    } catch (error) {
+
+        showMessage(error.message, true);
+
+        await loadBookings();
+
+    } finally {
+
+        if (button) button.disabled = false;
+
+    }
+
+}
+
+
+// ==========================================
+// EVENT LISTENERS
+// ==========================================
 
 $('loginBtn').addEventListener('click', login);
 
 $('password').addEventListener('keydown', event => {
-  if (event.key === 'Enter') login();
+
+    if (event.key === 'Enter') login();
+
 });
 
 $('refreshBtn').addEventListener('click', loadBookings);
 
 $('logoutBtn').addEventListener('click', async () => {
-  await db.auth.signOut();
 
-  $('dashboard').classList.add('hidden');
-  $('loginPanel').classList.remove('hidden');
-  $('password').value = '';
-  $('loginMessage').textContent = '';
+    await db.auth.signOut();
+
+    $('dashboard').classList.add('hidden');
+    $('loginPanel').classList.remove('hidden');
+
+    $('password').value = '';
+    $('loginMessage').textContent = '';
+
 });
 
 $('bookingsBody').addEventListener('click', event => {
-  const button = event.target.closest('button[data-action]');
 
-  if (!button) return;
+    const button = event.target.closest(
+        'button[data-action]'
+    );
 
-  updateBooking(button.dataset.id, button.dataset.action);
+    if (!button) return;
+
+    updateBooking(
+        button.dataset.id,
+        button.dataset.action,
+        button
+    );
+
 });
 
+[
+    'searchInput',
+    'statusFilter',
+    'barberFilter',
+    'dateFilter'
+].forEach(id => {
+
+    $(id).addEventListener('input', renderBookings);
+
+});
+
+$('clearFilters').addEventListener('click', () => {
+
+    $('searchInput').value = '';
+    $('statusFilter').value = 'all';
+    $('barberFilter').value = 'all';
+    $('dateFilter').value = '';
+
+    renderBookings();
+
+});
+
+$('appointmentsNav').addEventListener('click', () => {
+
+    $('appointmentsSection').scrollIntoView({
+        behavior: 'smooth'
+    });
+
+});
+
+
+// ==========================================
+// START
+// ==========================================
+
 checkSession();
+
 </script>
+
 </body>
 </html>
