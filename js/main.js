@@ -1,18 +1,23 @@
 const $ = selector => document.querySelector(selector);
 
+// ==========================================
 // LOADING SCREEN
+// ==========================================
+
 window.addEventListener('load', () => {
     setTimeout(() => {
         const loader = $('#ld');
 
         if (loader) loader.classList.add('go');
 
-        // Reveal the main website
         document.body.classList.add('go');
     }, 500);
 });
 
+// ==========================================
 // MARQUEE
+// ==========================================
+
 const marquee = $('#mq');
 
 if (marquee) {
@@ -21,7 +26,10 @@ if (marquee) {
     ).repeat(8);
 }
 
+// ==========================================
 // SCROLL REVEAL
+// ==========================================
+
 const revealElements = document.querySelectorAll('.rv');
 
 if ('IntersectionObserver' in window) {
@@ -39,7 +47,10 @@ if ('IntersectionObserver' in window) {
     revealElements.forEach(element => element.classList.add('in'));
 }
 
+// ==========================================
 // GOOGLE RATING COUNTERS
+// ==========================================
+
 document.querySelectorAll('[data-n]').forEach(element => {
     const number = Number(element.dataset.n);
 
@@ -48,7 +59,10 @@ document.querySelectorAll('[data-n]').forEach(element => {
         : number.toFixed(1);
 });
 
+// ==========================================
 // BOOKING SYSTEM
+// ==========================================
+
 const S = {
     barber: '',
     service: '',
@@ -64,8 +78,59 @@ const SERVICES = [
     'Cut and Beard'
 ];
 
+// Match customer-facing names with admin-assigned names.
+const BARBER_ALIASES = {
+    'Maher': ['maher', 'maher nayef'],
+    'Najem': ['najem'],
+    'Nayef': ['nayef', 'nayef hussein']
+};
+
+// Estimated service durations in minutes.
+function getDuration(service) {
+    const s = String(service || '').toLowerCase();
+
+    if (s.includes('cut and beard')) return 60;
+
+    if (s.includes('fade') || s.includes('taper')) return 45;
+
+    if (s.includes('beard')) return 30;
+
+    return 30;
+}
+
+function pad(number) {
+    return String(number).padStart(2, '0');
+}
+
+function formatDate(date) {
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function timeToMinutes(time) {
+    const parts = String(time).split(':');
+
+    return Number(parts[0]) * 60 + Number(parts[1]);
+}
+
+function barberMatches(assignedBarber, requestedBarber) {
+    const assigned = String(assignedBarber || '')
+        .trim()
+        .toLowerCase();
+
+    const aliases = BARBER_ALIASES[requestedBarber] || [
+        requestedBarber.toLowerCase()
+    ];
+
+    return aliases.includes(assigned);
+}
+
+// ==========================================
+// CREATE BARBER AND SERVICE BUTTONS
+// ==========================================
+
 function createChips(selector, options, key) {
     const container = $(selector);
+
     if (!container) return;
 
     container.innerHTML = '';
@@ -84,6 +149,10 @@ function createChips(selector, options, key) {
             });
 
             updateSummary();
+
+            if (key === 'barber' || key === 'service') {
+                createTimeSlots();
+            }
         });
 
         container.appendChild(button);
@@ -93,14 +162,11 @@ function createChips(selector, options, key) {
 createChips('#cb', BARBERS, 'barber');
 createChips('#cs', SERVICES, 'service');
 
-// DATE AND TIME
+// ==========================================
+// DATE
+// ==========================================
+
 const dateInput = $('#bd');
-
-const pad = number => String(number).padStart(2, '0');
-
-const formatDate = date => {
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-};
 
 if (dateInput) {
     const today = new Date();
@@ -109,12 +175,126 @@ if (dateInput) {
     dateInput.value = formatDate(today);
 }
 
-function createTimeSlots() {
+// ==========================================
+// GET CONFIRMED BOOKINGS FROM SUPABASE
+// ==========================================
+
+async function getConfirmedBookings(date) {
+    if (!window.supabaseClient) {
+        throw new Error('Supabase client unavailable.');
+    }
+
+    const { data, error } = await window.supabaseClient.rpc(
+        'get_confirmed_availability',
+        {
+            target_date: date
+        }
+    );
+
+    if (error) throw error;
+
+    return data || [];
+}
+
+// ==========================================
+// CHECK IF A BARBER IS BUSY
+// ==========================================
+
+function isBarberBusy(barber, time, duration, bookings) {
+    const newStart = timeToMinutes(time);
+    const newEnd = newStart + duration;
+
+    return bookings.some(booking => {
+        if (!barberMatches(booking.assigned_barber, barber)) {
+            return false;
+        }
+
+        const existingStart = timeToMinutes(
+            booking.appointment_time
+        );
+
+        const existingDuration = Number(
+            booking.duration_minutes || 30
+        );
+
+        const existingEnd = existingStart + existingDuration;
+
+        return (
+            newStart < existingEnd &&
+            newEnd > existingStart
+        );
+    });
+}
+
+// ==========================================
+// CHECK AVAILABILITY
+// ==========================================
+
+function isTimeAvailable(time, bookings) {
+    const duration = getDuration(S.service);
+
+    if (S.barber === 'Any barber') {
+        const availableBarbers = BARBERS.filter(
+            barber => barber !== 'Any barber'
+        );
+
+        return availableBarbers.some(barber =>
+            !isBarberBusy(barber, time, duration, bookings)
+        );
+    }
+
+    return !isBarberBusy(
+        S.barber,
+        time,
+        duration,
+        bookings
+    );
+}
+
+// ==========================================
+// CREATE TIME SLOTS
+// ==========================================
+
+let availabilityRequest = 0;
+
+async function createTimeSlots() {
     const container = $('#ct');
+
     if (!container || !dateInput) return;
+
+    const requestNumber = ++availabilityRequest;
 
     container.innerHTML = '';
     S.time = '';
+
+    updateSummary();
+
+    if (!S.barber || !S.service) {
+        container.textContent =
+            'Choose a barber and service to see available times.';
+        return;
+    }
+
+    container.textContent = 'Checking availability...';
+
+    let bookings;
+
+    try {
+        bookings = await getConfirmedBookings(dateInput.value);
+    } catch (error) {
+        console.error('Availability error:', error);
+
+        if (requestNumber === availabilityRequest) {
+            container.textContent =
+                'Could not check availability. Please refresh the page.';
+        }
+
+        return;
+    }
+
+    if (requestNumber !== availabilityRequest) return;
+
+    container.innerHTML = '';
 
     const selectedDate = dateInput.value;
     const today = formatDate(new Date());
@@ -131,14 +311,24 @@ function createTimeSlots() {
         button.type = 'button';
         button.textContent = time;
 
-        if (
+        const alreadyPassed =
             selectedDate === today &&
-            minutes <= now.getHours() * 60 + now.getMinutes() + 15
-        ) {
+            minutes <= now.getHours() * 60 + now.getMinutes() + 15;
+
+        const unavailable = !isTimeAvailable(time, bookings);
+
+        if (alreadyPassed || unavailable) {
             button.disabled = true;
+            button.classList.add('unavailable');
+
+            if (unavailable) {
+                button.title = 'This time is already booked.';
+            }
         }
 
         button.addEventListener('click', () => {
+            if (button.disabled) return;
+
             S.time = time;
 
             [...container.children].forEach(child => {
@@ -156,10 +346,14 @@ function createTimeSlots() {
 
 if (dateInput) {
     dateInput.addEventListener('change', createTimeSlots);
+
     createTimeSlots();
 }
 
+// ==========================================
 // BOOKING SUMMARY
+// ==========================================
+
 function updateSummary() {
     const message = $('#bm');
 
@@ -181,7 +375,10 @@ function updateSummary() {
     }
 }
 
+// ==========================================
 // SUBMIT BOOKING
+// ==========================================
+
 const bookingButton = $('#bg');
 
 if (bookingButton) {
@@ -209,9 +406,24 @@ if (bookingButton) {
         }
 
         bookingButton.disabled = true;
-        bookingButton.textContent = 'Submitting...';
+        bookingButton.textContent = 'Checking availability...';
 
         try {
+            // Check availability again before submitting.
+            const latestBookings = await getConfirmedBookings(
+                dateInput.value
+            );
+
+            if (!isTimeAvailable(S.time, latestBookings)) {
+                message.textContent =
+                    'Sorry! This time has just been booked. Please choose another time.';
+
+                await createTimeSlots();
+                return;
+            }
+
+            bookingButton.textContent = 'Submitting...';
+
             const { error } = await window.supabaseClient
                 .from('bookings')
                 .insert([{
@@ -236,8 +448,18 @@ if (bookingButton) {
             S.service = '';
             S.time = '';
 
-            document.querySelectorAll('#cb button, #cs button, #ct button')
-                .forEach(button => button.classList.remove('on'));
+            document.querySelectorAll(
+                '#cb button, #cs button, #ct button'
+            ).forEach(button => {
+                button.classList.remove('on');
+            });
+
+            document.querySelectorAll('#cb button, #cs button')
+                .forEach(button => {
+                    button.classList.remove('on');
+                });
+
+            createTimeSlots();
 
         } catch (error) {
             console.error('Booking error:', error);
