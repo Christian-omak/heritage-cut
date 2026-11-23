@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Booking Status | Heritage Cut</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 460px;
+            padding: 45px 30px;
+            text-align: center;
+            background: #1c1c1c;
+            border: 1px solid #383838;
+            border-radius: 12px;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-bottom: 35px;
+        }
+
+        .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 25px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            color: #aaa;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .details {
+            margin-top: 25px;
+            padding: 20px;
+            background: #252525;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .details p {
+            margin: 9px 0;
+        }
+
+        .status {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 18px;
+            border-radius: 30px;
+            background: #383020;
+            color: #e8c477;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .confirmed {
+            background: #173c27;
+            color: #72d69a;
+        }
+
+        .cancelled {
+            background: #451e1e;
+            color: #ff8585;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 30px;
+            color: #d6b778;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 11px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+
+        <div class="logo">HERITAGE CUT</div>
+
+        <div class="icon" id="icon">⏳</div>
+
+        <h1 id="title">Checking your booking...</h1>
+
+        <p id="description">
+            Please wait while we retrieve your booking information.
+        </p>
+
+        <div id="details" class="details" style="display:none;">
+            <p><strong>Service:</strong> <span id="service"></span></p>
+            <p><strong>Date:</strong> <span id="date"></span></p>
+            <p><strong>Time:</strong> <span id="time"></span></p>
+            <p><strong>Barber:</strong> <span id="barber"></span></p>
+        </div>
+
+        <div id="status" class="status">
+            CHECKING
+        </div>
+
+        <br>
+
+        <a href="index.html">← Back to Heritage Cut</a>
+
+        <div class="footer">
+            HERITAGE CUT · BEIT EL CHAAR
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const supabaseClient = supabase.createClient(
+            'https://zqkrnnllqznseezlxlyo.supabase.co',
+            'sb_publishable_22sfkbflstpyAcPm-xDqsg_kmCISgOM'
+        );
+
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+
+        const title = document.getElementById('title');
+        const description = document.getElementById('description');
+        const icon = document.getElementById('icon');
+        const statusElement = document.getElementById('status');
+        const details = document.getElementById('details');
+
+        let lastStatus = '';
+
+        function showError(message) {
+            icon.textContent = '⚠️';
+            title.textContent = 'Booking not found';
+            description.textContent = message;
+            statusElement.style.display = 'none';
+            details.style.display = 'none';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Not available';
+
+            const date = new Date(dateString + 'T00:00:00');
+
+            return date.toLocaleDateString('en-GB', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        async function checkBooking() {
+            if (!token) {
+                showError('Your booking tracking link is missing its private code.');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient.rpc(
+                    'get_booking_status',
+                    { token: token }
+                );
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    showError('We could not find a booking connected to this tracking link.');
+                    return;
+                }
+
+                const booking = data[0];
+
+                document.getElementById('service').textContent =
+                    booking.service || 'Not available';
+
+                document.getElementById('date').textContent =
+                    formatDate(booking.appointment_date);
+
+                document.getElementById('time').textContent =
+                    (booking.appointment_time || '').slice(0, 5);
+
+                document.getElementById('barber').textContent =
+                    booking.assigned_barber || 'To be assigned';
+
+                details.style.display = 'block';
+
+                const currentStatus = String(booking.status || '').toLowerCase();
+
+                if (currentStatus === lastStatus) return;
+
+                lastStatus = currentStatus;
+
+                statusElement.className = 'status';
+
+                if (currentStatus === 'confirmed') {
+                    icon.textContent = '✅';
+                    title.textContent = 'Appointment Confirmed!';
+                    description.textContent =
+                        'Your appointment has been accepted by the barber. We look forward to seeing you!';
+
+                    statusElement.textContent = 'CONFIRMED';
+                    statusElement.classList.add('confirmed');
+
+                } else if (currentStatus === 'cancelled') {
+                    icon.textContent = '❌';
+                    title.textContent = 'Appointment Cancelled';
+                    description.textContent =
+                        'Your booking has been cancelled by the shop. Please contact us if you need assistance.';
+
+                    statusElement.textContent = 'CANCELLED';
+                    statusElement.classList.add('cancelled');
+
+                } else {
+                    icon.textContent = '⏳';
+                    title.textContent = 'Awaiting Confirmation';
+                    description.textContent =
+                        'Your booking request has been received. Please keep this page open or save this link to check your appointment status.';
+
+                    statusElement.textContent = 'PENDING CONFIRMATION';
+                }
+
+            } catch (error) {
+                console.error('Status check error:', error);
+
+                if (!lastStatus) {
+                    icon.textContent = '⚠️';
+                    title.textContent = 'Unable to check booking';
+                    description.textContent =
+                        'Please refresh this page in a moment.';
+                }
+            }
+        }
+
+        checkBooking();
+
+        // Automatically check for updates every 5 seconds.
+        setInterval(checkBooking, 5000);
+    </script>
+
+</body>
+</html>
