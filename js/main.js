@@ -60,6 +60,83 @@ document.querySelectorAll('[data-n]').forEach(element => {
 });
 
 // ==========================================
+// GOOGLE REVIEWS
+// ==========================================
+
+const REVIEWS = [
+    {
+        name: 'Seba Joe Salloum',
+        text: 'Hands down one of the best barber shops around! The quality, attention to detail, and professionalism are on another level. Every visit you get a fresh, clean, and perfect cut. If you haven’t tried this place yet, definitely come check it out — you won’t be disappointed. Best cuts, best service, every time! 💈🔥'
+    },
+    {
+        name: 'Paul King',
+        text: 'An incredible five-star experience! The barbers here are true masters of their craft, showing incredible skill, attention to detail, and a great eye for what suits you best. The atmosphere is welcoming, the service is top-notch.'
+    },
+    {
+        name: 'Mikel Tohme',
+        text: 'Amazing service and professional work. The barber was friendly, the shop is clean and has a great atmosphere.'
+    }
+];
+
+let currentReview = 0;
+let reviewInterval;
+
+function showReview(index) {
+    const quote = $('#rq');
+    const name = $('#rn');
+    const dots = $('#rd');
+
+    if (!quote || !name || !dots) return;
+
+    currentReview = index;
+
+    quote.textContent = REVIEWS[index].text;
+    name.textContent = REVIEWS[index].name;
+
+    [...dots.children].forEach((dot, i) => {
+        dot.classList.toggle('on', i === index);
+    });
+}
+
+function initializeReviews() {
+    const dots = $('#rd');
+
+    if (!dots) return;
+
+    dots.innerHTML = '';
+
+    REVIEWS.forEach((review, index) => {
+        const dot = document.createElement('button');
+
+        dot.type = 'button';
+        dot.setAttribute('aria-label', `Show review by ${review.name}`);
+
+        dot.addEventListener('click', () => {
+            showReview(index);
+
+            clearInterval(reviewInterval);
+            startReviewRotation();
+        });
+
+        dots.appendChild(dot);
+    });
+
+    showReview(0);
+    startReviewRotation();
+}
+
+function startReviewRotation() {
+    clearInterval(reviewInterval);
+
+    reviewInterval = setInterval(() => {
+        const nextReview = (currentReview + 1) % REVIEWS.length;
+        showReview(nextReview);
+    }, 6000);
+}
+
+initializeReviews();
+
+// ==========================================
 // BOOKING SYSTEM
 // ==========================================
 
@@ -82,7 +159,6 @@ const SERVICES = [
     'Haircut + Beard'
 ];
 
-// Match customer-facing barber names with admin names.
 const BARBER_ALIASES = {
     'Maher': ['maher', 'maher nayef'],
     'Najem': ['najem'],
@@ -317,7 +393,6 @@ async function createTimeSlots() {
     const today = formatDate(new Date());
     const now = new Date();
 
-    // Booking slots every 30 minutes.
     for (let minutes = 600; minutes <= 1170; minutes += 30) {
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
