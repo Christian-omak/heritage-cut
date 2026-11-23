@@ -5,20 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Heritage Cut | Admin Dashboard</title>
 
-<!-- ONESIGNAL PUSH NOTIFICATIONS -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-
-<script>
-window.OneSignalDeferred = window.OneSignalDeferred || [];
-
-OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-        appId: "11367f90-273b-4cad-afbe-e699547835b1",
-        serviceWorkerPath: "/OneSignalSDKWorker.js"
-    });
-});
-</script>
-
 <!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -440,8 +426,6 @@ tbody tr:hover { background:#222; }
 
 <body>
 
-<!-- LOGIN -->
-
 <section id="loginPanel" class="login-screen">
     <div class="login-card">
         <div class="logo">HERITAGE CUT</div>
@@ -455,8 +439,6 @@ tbody tr:hover { background:#222; }
         <div id="loginMessage" class="message"></div>
     </div>
 </section>
-
-<!-- DASHBOARD -->
 
 <div id="dashboard" class="layout hidden">
 
@@ -491,8 +473,6 @@ tbody tr:hover { background:#222; }
             </div>
         </header>
 
-        <!-- STATISTICS -->
-
         <section class="stats">
             <div class="stat-card">
                 <div class="stat-label">TOTAL BOOKINGS</div>
@@ -518,8 +498,6 @@ tbody tr:hover { background:#222; }
                 <div class="stat-note">Accepted appointments</div>
             </div>
         </section>
-
-        <!-- APPOINTMENTS -->
 
         <section class="panel" id="appointmentsSection">
 
@@ -605,10 +583,6 @@ tbody tr:hover { background:#222; }
 
 <script>
 
-// ==========================================
-// SUPABASE CONFIGURATION
-// ==========================================
-
 const SUPABASE_URL =
     'https://zqkrnnllqznseezlxlyo.supabase.co';
 
@@ -626,9 +600,7 @@ const db = window.supabase.createClient(
 const $ = id => document.getElementById(id);
 
 
-// ==========================================
-// REALTIME BOOKING UPDATES
-// ==========================================
+// REALTIME
 
 let bookingsChannel = null;
 let realtimeRefreshTimer = null;
@@ -687,9 +659,7 @@ async function stopRealtime() {
 }
 
 
-// ==========================================
 // DATA
-// ==========================================
 
 const BARBERS = [
     'Maher Nayef',
@@ -700,9 +670,7 @@ const BARBERS = [
 let allBookings = [];
 
 
-// ==========================================
 // HELPERS
-// ==========================================
 
 function escapeHTML(value) {
     return String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -769,9 +737,7 @@ function showMessage(message, error = false) {
 }
 
 
-// ==========================================
 // LOGIN
-// ==========================================
 
 async function login() {
     const email = $('email').value.trim();
@@ -813,9 +779,7 @@ async function login() {
 }
 
 
-// ==========================================
 // CHECK SESSION
-// ==========================================
 
 async function checkSession() {
     try {
@@ -842,9 +806,7 @@ async function checkSession() {
 }
 
 
-// ==========================================
 // LOAD BOOKINGS
-// ==========================================
 
 async function loadBookings() {
     $('bookingsBody').innerHTML = `
@@ -882,9 +844,7 @@ async function loadBookings() {
 }
 
 
-// ==========================================
 // STATISTICS
-// ==========================================
 
 function updateStatistics() {
     const today = getToday();
@@ -909,9 +869,7 @@ function updateStatistics() {
 }
 
 
-// ==========================================
 // FILTER BOOKINGS
-// ==========================================
 
 function getFilteredBookings() {
     const search = $('searchInput').value.trim().toLowerCase();
@@ -958,9 +916,7 @@ function getFilteredBookings() {
 }
 
 
-// ==========================================
 // DISPLAY BOOKINGS
-// ==========================================
 
 function renderBookings() {
     const bookings = getFilteredBookings();
@@ -1091,9 +1047,7 @@ function renderBookings() {
 }
 
 
-// ==========================================
 // CONFIRM OR CANCEL BOOKING
-// ==========================================
 
 async function updateBooking(id, action, button) {
     if (button) button.disabled = true;
@@ -1179,9 +1133,7 @@ async function updateBooking(id, action, button) {
 }
 
 
-// ==========================================
 // EVENT LISTENERS
-// ==========================================
 
 $('loginBtn').addEventListener('click', login);
 
@@ -1240,9 +1192,7 @@ $('appointmentsNav').addEventListener('click', () => {
 });
 
 
-// ==========================================
 // START
-// ==========================================
 
 checkSession();
 
