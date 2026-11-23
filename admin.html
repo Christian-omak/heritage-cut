@@ -270,6 +270,11 @@ async function updateBooking(id, action) {
   if (action === 'confirm') {
     let assignedBarber = current.barber;
 
+if (assignedBarber === 'Maher') {
+  assignedBarber = 'Maher Nayef';
+} else if (assignedBarber === 'Nayef') {
+  assignedBarber = 'Nayef Hussein';
+
     if (!assignedBarber ||
         assignedBarber.toLowerCase().includes('any')) {
       const selector = $('barber-' + id);
