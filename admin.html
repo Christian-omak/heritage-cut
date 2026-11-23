@@ -895,6 +895,7 @@ async function checkSession() {
             $('loginPanel').classList.add('hidden');
             $('dashboard').classList.remove('hidden');
 
+            startRealtime();
             await loadBookings();
         }
 
