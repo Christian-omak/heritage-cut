@@ -70,7 +70,6 @@ rt=setInterval(()=>showR((ri+1)%RV.length),6000);
 /* BOOKING SYSTEM */
 
 const S={b:'',s:'',t:''};
-
 const BA=['Maher','Najem','Nayef','Any barber'];
 const SV=['Signature Haircut','Fade or Taper','Beard Sculpting','Cut and Beard'];
 
@@ -98,7 +97,6 @@ chips('#cs',SV,'s');
 const bd=$('#bd');
 const pad=n=>String(n).padStart(2,'0');
 const now=new Date();
-
 const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 
 bd.min=iso(now);
@@ -120,7 +118,7 @@ function slots(){
     b.textContent=pad(h)+':'+pad(mi);
 
     if(today&&m<=n.getHours()*60+n.getMinutes()+15){
-      b.disabled=true
+      b.disabled=true;
     }
 
     b.onclick=()=>{
@@ -149,31 +147,31 @@ function sum(){
 
   $('#bm').textContent=(S.b&&S.s&&S.t&&d)
     ?S.s+' with '+S.b+', '+d+' at '+S.t
-    :'Pick a barber, service, date and time.'
+    :'Pick a barber, service, date and time.';
 }
 
 
-/* SUBMIT BOOKING */
+/* SUBMIT BOOKING TO SUPABASE */
 
 $('#bg').onclick=async()=>{
   const n=$('#bn').value.trim();
   const p=$('#bp').value.trim();
   const btn=$('#bg');
-  const message=$('#bm');
+  const msg=$('#bm');
 
   if(!(S.b&&S.s&&S.t&&bd.value)){
-    message.textContent='Please choose a barber, service, date and time first.';
-    return
+    msg.textContent='Please choose a barber, service, date and time first.';
+    return;
   }
 
   if(!n||p.length<6){
-    message.textContent='Please add your name and phone number.';
-    return
+    msg.textContent='Please add your name and phone number.';
+    return;
   }
 
   if(!window.supabaseClient){
-    message.textContent='Connection error. Please try again later.';
-    return
+    msg.textContent='Connection error. Please try again later.';
+    return;
   }
 
   btn.disabled=true;
@@ -192,9 +190,9 @@ $('#bg').onclick=async()=>{
         status:'Pending'
       });
 
-    if(error)throw error;
+    if(error) throw error;
 
-    message.innerHTML=
+    msg.innerHTML=
       '<strong>Booking request received!</strong><br>'+
       'Thank you! Your appointment request has been submitted. '+
       'We will contact you shortly to confirm your appointment.';
@@ -209,20 +207,15 @@ $('#bg').onclick=async()=>{
     document.querySelectorAll('#cb button, #cs button, #ct button')
       .forEach(b=>b.classList.remove('on'));
 
-    sum();
-
-    message.innerHTML=
-      '<strong>Booking request received!</strong><br>'+
-      'Thank you! Your appointment request has been submitted. '+
-      'We will contact you shortly to confirm your appointment.';
+    btn.textContent='Send another request';
 
   }catch(error){
     console.error('Booking error:',error);
-    message.textContent='Could not save your booking. Please try again.';
+    msg.textContent='Could not save your booking. Please try again.';
+    btn.textContent='Send booking request';
   }
 
   btn.disabled=false;
-  btn.textContent='Send booking request';
 };
 
 
