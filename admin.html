@@ -858,6 +858,7 @@ async function login() {
         $('loginPanel').classList.add('hidden');
         $('dashboard').classList.remove('hidden');
 
+        startRealtime();
         await loadBookings();
 
     } catch (error) {
