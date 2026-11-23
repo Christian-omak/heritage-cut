@@ -19,6 +19,9 @@ if (marquee) {
 
 // SCROLL REVEAL
 const revealElements = document.querySelectorAll('.rv');
+revealElements.forEach(element => {
+    element.classList.add('in');
+});
 
 if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(entries => {
