@@ -1,406 +1,334 @@
+?variant="standard" id="58321" title="Heritage Cut Admin Panel — Complete Replacement"}
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heritage Cut | Admin Panel</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: #f5f0e8;
-            padding: 30px 5%;
-        }
-
-        h1 {
-            margin-bottom: 10px;
-            font-size: 32px;
-        }
-
-        .subtitle {
-            color: #aaa;
-            margin-bottom: 30px;
-        }
-
-        .gold {
-            color: #c6a36b;
-        }
-
-        .box {
-            max-width: 450px;
-            margin: 70px auto;
-            background: #1d1d1d;
-            padding: 35px;
-            border-radius: 12px;
-            border: 1px solid #333;
-        }
-
-        input {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            background: #292929;
-            color: white;
-            border: 1px solid #444;
-            border-radius: 6px;
-        }
-
-        button {
-            cursor: pointer;
-            padding: 11px 16px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        .login-btn {
-            width: 100%;
-            background: #c6a36b;
-            color: #111;
-            margin-top: 15px;
-        }
-
-        .logout-btn {
-            background: #333;
-            color: white;
-        }
-
-        .dashboard {
-            display: none;
-        }
-
-        .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-            background: #1d1d1d;
-            border-radius: 10px;
-            border: 1px solid #333;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 850px;
-        }
-
-        th, td {
-            padding: 16px;
-            text-align: left;
-            border-bottom: 1px solid #333;
-        }
-
-        th {
-            color: #c6a36b;
-        }
-
-        td {
-            font-size: 14px;
-        }
-
-        .confirm {
-            background: #286b43;
-            color: white;
-            margin: 3px;
-        }
-
-        .cancel {
-            background: #8b3030;
-            color: white;
-            margin: 3px;
-        }
-
-        .status {
-            font-weight: bold;
-        }
-
-        .message {
-            margin-top: 15px;
-            color: #c6a36b;
-        }
-
-        .empty {
-            padding: 30px;
-            text-align: center;
-            color: #aaa;
-        }
-
-        @media(max-width: 600px) {
-            body {
-                padding: 20px 12px;
-            }
-
-            .top {
-                align-items: flex-start;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heritage Cut | Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:#eee;font-family:Arial,sans-serif;padding:25px}
+.container{max-width:1200px;margin:auto}
+h1{color:#d5b47a}
+.subtitle{color:#999;margin-bottom:30px}
+.panel{background:#1b1b1b;border:1px solid #333;border-radius:12px;padding:24px;margin-bottom:20px}
+input,select{background:#111;color:white;border:1px solid #444;padding:12px;border-radius:6px;width:100%;margin:8px 0}
+button{padding:11px 16px;border:0;border-radius:6px;cursor:pointer;font-weight:bold;margin:4px}
+.primary{background:#d5b47a;color:#111}
+.confirm{background:#287c4b;color:white}
+.cancel{background:#9d3434;color:white}
+.logout{background:#333;color:white}
+table{width:100%;border-collapse:collapse;min-width:950px}
+th,td{text-align:left;padding:14px;border-bottom:1px solid #333;vertical-align:middle}
+th{color:#d5b47a}
+.table-wrap{overflow-x:auto}
+.status{font-weight:bold}
+.pending{color:#e6bd65}
+.confirmed{color:#62d995}
+.cancelled{color:#ff7777}
+.hidden{display:none}
+.message{margin-top:15px;color:#d5b47a;white-space:pre-wrap}
+.small{color:#aaa;font-size:13px}
+.assignment{min-width:130px}
+@media(max-width:600px){body{padding:12px}.panel{padding:15px}}
+</style>
 </head>
-
 <body>
+<div class="container">
 
-    <!-- LOGIN -->
-    <div class="box" id="loginBox">
-        <h1>Heritage <span class="gold">Cut</span></h1>
-        <p class="subtitle">Administrator Login</p>
+<h1>HERITAGE CUT</h1>
+<p class="subtitle">Booking Management Dashboard</p>
 
-        <form id="loginForm">
-            <input
-                type="email"
-                id="email"
-                placeholder="Email address"
-                required
-            >
+<section id="loginPanel" class="panel">
+<h2>Administrator Login</h2>
+<input id="email" type="email" placeholder="Admin email">
+<input id="password" type="password" placeholder="Password">
+<button class="primary" id="loginBtn">Log In</button>
+<div id="loginMessage" class="message"></div>
+</section>
 
-            <input
-                type="password"
-                id="password"
-                placeholder="Password"
-                required
-            >
+<section id="dashboard" class="hidden">
+<div class="panel">
+<h2>Bookings</h2>
+<p class="small">Confirm or cancel customer appointment requests.</p>
+<button class="primary" id="refreshBtn">Refresh Bookings</button>
+<button class="logout" id="logoutBtn">Log Out</button>
+<div id="message" class="message"></div>
+</div>
 
-            <button class="login-btn" type="submit">
-                Log In
-            </button>
-        </form>
-
-        <p class="message" id="loginMessage"></p>
-    </div>
-
-
-    <!-- DASHBOARD -->
-    <div class="dashboard" id="dashboard">
-
-        <div class="top">
-            <div>
-                <h1>Heritage <span class="gold">Cut</span></h1>
-                <p class="subtitle">Booking Management</p>
-            </div>
-
-            <button class="logout-btn" id="logoutBtn">
-                Log Out
-            </button>
-        </div>
-
-        <h2 style="margin-bottom:20px;">Appointment Requests</h2>
-
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Customer</th>
-                        <th>Phone</th>
-                        <th>Barber</th>
-                        <th>Service</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody id="bookingsTable"></tbody>
-            </table>
-        </div>
-
-        <p class="message" id="dashboardMessage"></p>
-
-        <button
-            onclick="loadBookings()"
-            style="margin-top:20px;background:#c6a36b;color:#111;"
-        >
-            Refresh Bookings
-        </button>
-
-    </div>
-
+<div class="panel table-wrap">
+<table>
+<thead>
+<tr>
+<th>Customer</th>
+<th>Phone</th>
+<th>Requested Barber</th>
+<th>Assigned Barber</th>
+<th>Service</th>
+<th>Date</th>
+<th>Time</th>
+<th>Duration</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="bookingsBody">
+<tr><td colspan="10">Loading bookings...</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
 
 <script>
-    const SUPABASE_URL = 'https://zqkrnnllqznseezlxlyo.supabase.co';
+const SUPABASE_URL = 'https://zqkrnnllqznseezlxlyo.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_22sfkbflstpyAcPm-xDqsg_kmCISgOM';
+const ADMIN_UID = '322779e8-2fca-4b79-b5cf-1de4df79456e';
 
-    const SUPABASE_KEY = 'sb_publishable_22sfkbflstpyAcPm-xDqsg_kmCISgOM';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const ADMIN_UID = '322779e8-2fca-4b79-b5cf-1de4df79456e';
+const $ = id => document.getElementById(id);
 
-    const client = supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
+const BARBERS = [
+  'Maher Nayef',
+  'Najem',
+  'Nayef Hussein'
+];
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#039;'
+  })[char]);
+}
+
+function getDuration(service) {
+  const s = String(service || '').toLowerCase();
+
+  if (s.includes('cut and beard') || s.includes('haircut and beard') ||
+      s.includes('haircut & beard') || s.includes('combo')) {
+    return 60;
+  }
+
+  if (s.includes('fade') || s.includes('taper')) {
+    return 45;
+  }
+
+  if (s.includes('beard')) {
+    return 30;
+  }
+
+  return 30;
+}
+
+function showMessage(message, isError = false) {
+  $('message').textContent = message;
+  $('message').style.color = isError ? '#ff7777' : '#d5b47a';
+}
+
+async function login() {
+  const email = $('email').value.trim();
+  const password = $('password').value;
+
+  $('loginMessage').textContent = 'Logging in...';
+
+  const {data, error} = await db.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    $('loginMessage').textContent = error.message;
+    return;
+  }
+
+  if (data.user.id !== ADMIN_UID) {
+    await db.auth.signOut();
+    $('loginMessage').textContent = 'This account is not authorized.';
+    return;
+  }
+
+  $('loginPanel').classList.add('hidden');
+  $('dashboard').classList.remove('hidden');
+
+  await loadBookings();
+}
+
+async function checkSession() {
+  const {data} = await db.auth.getSession();
+
+  if (data.session && data.session.user.id === ADMIN_UID) {
+    $('loginPanel').classList.add('hidden');
+    $('dashboard').classList.remove('hidden');
+    await loadBookings();
+  }
+}
+
+async function loadBookings() {
+  $('bookingsBody').innerHTML =
+    '<tr><td colspan="10">Loading bookings...</td></tr>';
+
+  const {data, error} = await db
+    .from('bookings')
+    .select('*')
+    .order('created_at', {ascending:false});
+
+  if (error) {
+    $('bookingsBody').innerHTML =
+      '<tr><td colspan="10">Error loading bookings: ' +
+      escapeHTML(error.message) + '</td></tr>';
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    $('bookingsBody').innerHTML =
+      '<tr><td colspan="10">No bookings found.</td></tr>';
+    return;
+  }
+
+  $('bookingsBody').innerHTML = data.map(booking => {
+    const status = booking.status || 'Pending';
+    const requestedBarber = booking.barber || '';
+    const assigned = booking.assigned_barber || '';
+    const duration = booking.duration_minutes || getDuration(booking.service);
+
+    const options = BARBERS.map(barber =>
+      `<option value="${escapeHTML(barber)}"
+        ${assigned === barber ? 'selected' : ''}>
+        ${escapeHTML(barber)}
+      </option>`
+    ).join('');
+
+    const assignment = status === 'Pending'
+      ? `<select class="assignment" id="barber-${booking.id}">
+          ${options}
+        </select>`
+      : escapeHTML(assigned || 'Not assigned');
+
+    let actions = '';
+
+    if (status === 'Pending') {
+      actions = `
+        <button class="confirm" data-action="confirm"
+          data-id="${booking.id}">Confirm</button>
+        <button class="cancel" data-action="cancel"
+          data-id="${booking.id}">Cancel</button>`;
+    } else {
+      actions = '<span class="small">No actions</span>';
+    }
+
+    return `
+      <tr>
+        <td>${escapeHTML(booking.customer_name)}</td>
+        <td>${escapeHTML(booking.phone)}</td>
+        <td>${escapeHTML(requestedBarber)}</td>
+        <td>${assignment}</td>
+        <td>${escapeHTML(booking.service)}</td>
+        <td>${escapeHTML(booking.appointment_date)}</td>
+        <td>${escapeHTML(booking.appointment_time)}</td>
+        <td>${duration} min</td>
+        <td class="status ${status.toLowerCase()}">
+          ${escapeHTML(status)}
+        </td>
+        <td>${actions}</td>
+      </tr>`;
+  }).join('');
+}
+
+async function updateBooking(id, action) {
+  showMessage('Updating booking...');
+
+  const {data: current, error: readError} = await db
+    .from('bookings')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (readError || !current) {
+    showMessage('Could not load booking: ' +
+      (readError?.message || 'Booking not found.'), true);
+    return;
+  }
+
+  if (current.status !== 'Pending') {
+    showMessage('This booking has already been processed.', true);
+    await loadBookings();
+    return;
+  }
+
+  let updates;
+
+  if (action === 'confirm') {
+    let assignedBarber = current.barber;
+
+    if (!assignedBarber ||
+        assignedBarber.toLowerCase().includes('any')) {
+      const selector = $('barber-' + id);
+      assignedBarber = selector ? selector.value : '';
+    }
+
+    if (!BARBERS.includes(assignedBarber)) {
+      showMessage('Please select a barber before confirming.', true);
+      return;
+    }
+
+    updates = {
+      status: 'Confirmed',
+      assigned_barber: assignedBarber,
+      duration_minutes: getDuration(current.service)
+    };
+  } else {
+    updates = {
+      status: 'Cancelled'
+    };
+  }
+
+  const {error} = await db
+    .from('bookings')
+    .update(updates)
+    .eq('id', id);
+
+  if (error) {
+    showMessage(
+      'Could not update booking: ' + error.message,
+      true
     );
+    return;
+  }
 
-    const loginBox = document.getElementById('loginBox');
-    const dashboard = document.getElementById('dashboard');
+  showMessage(
+    action === 'confirm'
+      ? 'Booking confirmed successfully!'
+      : 'Booking cancelled successfully!'
+  );
 
-    // LOGIN
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
+  await loadBookings();
+}
 
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const message = document.getElementById('loginMessage');
+$('loginBtn').addEventListener('click', login);
+$('refreshBtn').addEventListener('click', loadBookings);
 
-        message.textContent = 'Logging in...';
+$('logoutBtn').addEventListener('click', async () => {
+  await db.auth.signOut();
+  $('dashboard').classList.add('hidden');
+  $('loginPanel').classList.remove('hidden');
+  $('password').value = '';
+});
 
-        const { data, error } = await client.auth.signInWithPassword({
-            email,
-            password
-        });
+$('bookingsBody').addEventListener('click', event => {
+  const button = event.target.closest('button[data-action]');
+  if (!button) return;
 
-        if (error) {
-            message.textContent = error.message;
-            return;
-        }
+  updateBooking(button.dataset.id, button.dataset.action);
+});
 
-        if (data.user.id !== ADMIN_UID) {
-            await client.auth.signOut();
-            message.textContent = 'You are not authorized to access this panel.';
-            return;
-        }
-
-        showDashboard();
-    });
-
-
-    // SHOW DASHBOARD
-    async function showDashboard() {
-        loginBox.style.display = 'none';
-        dashboard.style.display = 'block';
-
-        await loadBookings();
-    }
-
-
-    // LOAD BOOKINGS
-    async function loadBookings() {
-        const table = document.getElementById('bookingsTable');
-        const message = document.getElementById('dashboardMessage');
-
-        table.innerHTML = '';
-        message.textContent = 'Loading bookings...';
-
-        const { data, error } = await client
-            .from('bookings')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            message.textContent = 'Error loading bookings: ' + error.message;
-            return;
-        }
-
-        if (!data || data.length === 0) {
-            message.textContent = 'No bookings found yet.';
-            return;
-        }
-
-        message.textContent = `${data.length} booking(s) found.`;
-
-        data.forEach(booking => {
-            const row = document.createElement('tr');
-
-            const values = [
-                booking.customer_name,
-                booking.phone,
-                booking.barber,
-                booking.service,
-                booking.appointment_date,
-                booking.appointment_time,
-                booking.status
-            ];
-
-            values.forEach((value, index) => {
-                const cell = document.createElement('td');
-                cell.textContent = value ?? '';
-                if (index === 6) cell.className = 'status';
-                row.appendChild(cell);
-            });
-
-            const actions = document.createElement('td');
-
-            const confirmButton = document.createElement('button');
-            confirmButton.textContent = 'Confirm';
-            confirmButton.className = 'confirm';
-            confirmButton.addEventListener('click', () => {
-                updateStatus(booking.id, 'Confirmed');
-            });
-
-            const cancelButton = document.createElement('button');
-            cancelButton.textContent = 'Cancel';
-            cancelButton.className = 'cancel';
-            cancelButton.addEventListener('click', () => {
-                updateStatus(booking.id, 'Cancelled');
-            });
-
-            actions.appendChild(confirmButton);
-            actions.appendChild(cancelButton);
-
-            row.appendChild(actions);
-            table.appendChild(row);
-        });
-    }
-
-
-    // UPDATE BOOKING STATUS
-    async function updateStatus(id, status) {
-        const message = document.getElementById('dashboardMessage');
-
-        message.textContent = 'Updating booking...';
-
-        const { error } = await client
-            .from('bookings')
-            .update({ status: status })
-            .eq('id', id);
-
-        if (error) {
-            message.textContent = 'Could not update booking: ' + error.message;
-            return;
-        }
-
-        message.textContent = 'Booking updated successfully!';
-        await loadBookings();
-    }
-
-
-    // LOG OUT
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-        await client.auth.signOut();
-
-        dashboard.style.display = 'none';
-        loginBox.style.display = 'block';
-        document.getElementById('loginMessage').textContent = '';
-    });
-
-
-    // CHECK EXISTING SESSION
-    async function checkSession() {
-        const { data } = await client.auth.getSession();
-
-        if (data.session) {
-            if (data.session.user.id === ADMIN_UID) {
-                showDashboard();
-            } else {
-                await client.auth.signOut();
-            }
-        }
-    }
-
-    checkSession();
-
+checkSession();
 </script>
-
 </body>
 </html>
+```
