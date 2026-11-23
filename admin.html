@@ -267,7 +267,36 @@ async function updateBooking(id, action) {
 
   let updates;
 
-  if (action === 'confirm') {
+ if (action === 'confirm') {
+  let assignedBarber = current.barber;
+
+  if (assignedBarber === 'Maher') {
+    assignedBarber = 'Maher Nayef';
+  } else if (assignedBarber === 'Nayef') {
+    assignedBarber = 'Nayef Hussein';
+  }
+
+  if (!assignedBarber ||
+      assignedBarber.toLowerCase().includes('any')) {
+    const selector = $('barber-' + id);
+    assignedBarber = selector ? selector.value : '';
+  }
+
+  if (!BARBERS.includes(assignedBarber)) {
+    showMessage('Please select a barber before confirming.', true);
+    return;
+  }
+
+  updates = {
+    status: 'Confirmed',
+    assigned_barber: assignedBarber,
+    duration_minutes: getDuration(current.service)
+  };
+} else {
+  updates = {
+    status: 'Cancelled'
+  };
+}
     let assignedBarber = current.barber;
 
 if (assignedBarber === 'Maher') {
