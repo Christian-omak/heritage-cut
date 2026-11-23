@@ -233,3 +233,11 @@ if (bookingButton) {
         }
     });
 }
+// GOOGLE RATING COUNTERS
+document.querySelectorAll('[data-n]').forEach(element => {
+    const number = Number(element.dataset.n);
+
+    element.textContent = Number.isInteger(number)
+        ? number
+        : number.toFixed(1);
+});
