@@ -24,7 +24,7 @@ if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('show');
+                entry.target.classList.add('in');
                 observer.unobserve(entry.target);
             }
         });
@@ -32,7 +32,7 @@ if ('IntersectionObserver' in window) {
 
     revealElements.forEach(element => observer.observe(element));
 } else {
-    revealElements.forEach(element => element.classList.add('show'));
+    revealElements.forEach(element => element.classList.add('in'));
 }
 
 // BOOKING SYSTEM
