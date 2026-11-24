@@ -1,6 +1,12 @@
 const $ = selector => document.querySelector(selector);
 
 // ==========================================
+// SUPABASE
+// ==========================================
+
+const supabaseClient = window.supabaseClient;
+
+// ==========================================
 // LOADING SCREEN
 // ==========================================
 
@@ -135,6 +141,361 @@ function startReviewRotation() {
 }
 
 initializeReviews();
+
+
+// ==========================================
+// CUSTOMER ACCOUNT SYSTEM
+// ==========================================
+
+const authOverlay = $('#authOverlay');
+const loginForm = $('#loginForm');
+const registerForm = $('#registerForm');
+const authMessage = $('#authMessage');
+
+let currentUser = null;
+let authMode = 'login';
+
+function showAuthMessage(message, type = '') {
+    if (!authMessage) return;
+
+    authMessage.textContent = message;
+    authMessage.className = `auth-message ${type}`;
+}
+
+function openAuth(mode = 'login') {
+    if (!authOverlay) return;
+
+    authOverlay.hidden = false;
+    document.body.classList.add('auth-open');
+
+    switchAuthMode(mode);
+}
+
+function closeAuth() {
+    if (!authOverlay) return;
+
+    authOverlay.hidden = true;
+    document.body.classList.remove('auth-open');
+
+    showAuthMessage('');
+}
+
+function switchAuthMode(mode) {
+    authMode = mode;
+
+    if (!loginForm || !registerForm) return;
+
+    const loginTab = $('#loginTab');
+    const registerTab = $('#registerTab');
+
+    const title = $('#authTitle');
+    const description = $('#authDescription');
+
+    loginForm.hidden = mode !== 'login';
+    registerForm.hidden = mode !== 'register';
+
+    if (loginTab) {
+        loginTab.classList.toggle('active', mode === 'login');
+    }
+
+    if (registerTab) {
+        registerTab.classList.toggle('active', mode === 'register');
+    }
+
+    if (title) {
+        title.innerHTML = mode === 'login'
+            ? 'Welcome <em>back.</em>'
+            : 'Join the <em>heritage.</em>';
+    }
+
+    if (description) {
+        description.textContent = mode === 'login'
+            ? 'Sign in to manage your appointments and preferences.'
+            : 'Create an account to keep your appointments in one place.';
+    }
+
+    showAuthMessage('');
+}
+
+$('#openLogin')?.addEventListener('click', () => {
+    openAuth('login');
+});
+
+$('#openRegister')?.addEventListener('click', () => {
+    openAuth('register');
+});
+
+$('#closeAuth')?.addEventListener('click', closeAuth);
+
+$('#loginTab')?.addEventListener('click', () => {
+    switchAuthMode('login');
+});
+
+$('#registerTab')?.addEventListener('click', () => {
+    switchAuthMode('register');
+});
+
+authOverlay?.addEventListener('click', event => {
+    if (event.target === authOverlay) {
+        closeAuth();
+    }
+});
+
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && authOverlay && !authOverlay.hidden) {
+        closeAuth();
+    }
+});
+
+
+// ==========================================
+// CUSTOMER PROFILE
+// ==========================================
+
+async function ensureCustomerProfile(user) {
+    if (!user || !supabaseClient) return null;
+
+    const { data: existingProfile, error: readError } =
+        await supabaseClient
+            .from('customer_profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle();
+
+    if (readError) throw readError;
+
+    if (existingProfile) return existingProfile;
+
+    const newProfile = {
+        id: user.id,
+        full_name: user.user_metadata?.full_name || '',
+        phone: user.user_metadata?.phone || '',
+        preferred_barber: '',
+        preferred_service: ''
+    };
+
+    const { data, error } = await supabaseClient
+        .from('customer_profiles')
+        .insert([newProfile])
+        .select()
+        .single();
+
+    if (error) throw error;
+
+    return data;
+}
+
+
+// ==========================================
+// UPDATE NAVIGATION AFTER LOGIN
+// ==========================================
+
+function updateAccountNavigation(user) {
+    const loginButton = $('#openLogin');
+    const registerButton = $('#openRegister');
+    const dashboardLink = $('#accountDashboard');
+
+    if (loginButton) {
+        loginButton.hidden = !!user;
+    }
+
+    if (registerButton) {
+        registerButton.hidden = !!user;
+    }
+
+    if (dashboardLink) {
+        dashboardLink.hidden = !user;
+    }
+}
+
+
+// ==========================================
+// SIGN IN
+// ==========================================
+
+loginForm?.addEventListener('submit', async event => {
+    event.preventDefault();
+
+    if (!supabaseClient) {
+        showAuthMessage('Connection error. Please try again.');
+        return;
+    }
+
+    const email = $('#loginEmail').value.trim();
+    const password = $('#loginPassword').value;
+
+    const submitButton = loginForm.querySelector('button[type="submit"]');
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Signing in...';
+
+    showAuthMessage('');
+
+    try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) throw error;
+
+        currentUser = data.user;
+
+        await ensureCustomerProfile(currentUser);
+
+        updateAccountNavigation(currentUser);
+
+        showAuthMessage('Successfully signed in!', 'success');
+
+        setTimeout(() => {
+            closeAuth();
+            window.location.href = 'customer-dashboard.html';
+        }, 700);
+
+    } catch (error) {
+        console.error('Sign in error:', error);
+
+        showAuthMessage(
+            error.message || 'Could not sign in. Please try again.',
+            'error'
+        );
+
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Sign in';
+    }
+});
+
+
+// ==========================================
+// CREATE ACCOUNT
+// ==========================================
+
+registerForm?.addEventListener('submit', async event => {
+    event.preventDefault();
+
+    if (!supabaseClient) {
+        showAuthMessage('Connection error. Please try again.');
+        return;
+    }
+
+    const fullName = $('#registerName').value.trim();
+    const phone = $('#registerPhone').value.trim();
+    const email = $('#registerEmail').value.trim();
+    const password = $('#registerPassword').value;
+
+    if (!fullName || phone.length < 6) {
+        showAuthMessage('Please enter your name and a valid phone number.');
+        return;
+    }
+
+    if (password.length < 8) {
+        showAuthMessage('Your password must contain at least 8 characters.');
+        return;
+    }
+
+    const submitButton = registerForm.querySelector('button[type="submit"]');
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Creating account...';
+
+    showAuthMessage('');
+
+    try {
+        const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+                emailRedirectTo: window.location.origin + '/',
+                data: {
+                    full_name: fullName,
+                    phone: phone
+                }
+            }
+        });
+
+        if (error) throw error;
+
+        if (data.session && data.user) {
+            currentUser = data.user;
+
+            await ensureCustomerProfile(currentUser);
+
+            updateAccountNavigation(currentUser);
+
+            showAuthMessage('Account created successfully!', 'success');
+
+            setTimeout(() => {
+                closeAuth();
+                window.location.href = 'customer-dashboard.html';
+            }, 1000);
+
+        } else {
+            showAuthMessage(
+                'Account created! Please check your email and click the verification link before signing in.',
+                'success'
+            );
+
+            registerForm.reset();
+        }
+
+    } catch (error) {
+        console.error('Registration error:', error);
+
+        showAuthMessage(
+            error.message || 'Could not create your account.',
+            'error'
+        );
+
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Create my account';
+    }
+});
+
+
+// ==========================================
+// AUTHENTICATION STATE
+// ==========================================
+
+async function initializeAuthentication() {
+    if (!supabaseClient) {
+        console.error('Supabase client not found.');
+        return;
+    }
+
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error) {
+        console.error('Session error:', error);
+        return;
+    }
+
+    currentUser = data.session?.user || null;
+
+    updateAccountNavigation(currentUser);
+
+    if (currentUser) {
+        try {
+            await ensureCustomerProfile(currentUser);
+        } catch (error) {
+            console.error('Profile initialization error:', error);
+        }
+    }
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        currentUser = session?.user || null;
+
+        updateAccountNavigation(currentUser);
+
+        if (event === 'SIGNED_OUT') {
+            window.location.reload();
+        }
+    });
+}
+
+initializeAuthentication();
+
 
 // ==========================================
 // BOOKING SYSTEM
@@ -328,11 +689,11 @@ if (dateInput) {
 // ==========================================
 
 async function getConfirmedBookings(date) {
-    if (!window.supabaseClient) {
+    if (!supabaseClient) {
         throw new Error('Supabase client unavailable.');
     }
 
-    const { data, error } = await window.supabaseClient.rpc(
+    const { data, error } = await supabaseClient.rpc(
         'get_confirmed_availability',
         {
             target_date: date
@@ -477,7 +838,6 @@ async function refreshBarberIndicators() {
                 }
             });
 
-        // Update the Any barber indicator.
         const anyIndex = BARBERS.indexOf('Any barber');
         const anyButton = container.children[anyIndex];
 
@@ -721,7 +1081,7 @@ if (bookingButton) {
             return;
         }
 
-        if (!window.supabaseClient) {
+        if (!supabaseClient) {
             message.textContent =
                 'Something went wrong. Please try again later.';
             return;
@@ -749,18 +1109,31 @@ if (bookingButton) {
 
             const trackingToken = generateTrackingToken();
 
-            const { error } = await window.supabaseClient
+            // Get the currently signed-in customer, if any.
+            const { data: userData, error: userError } =
+                await supabaseClient.auth.getUser();
+
+            if (userError) throw userError;
+
+            const user = userData.user;
+
+            // Signed-in customers must include their own customer_id.
+            // Guests keep customer_id as null.
+            const bookingData = {
+                customer_name: name,
+                phone: phone,
+                barber: S.barber,
+                service: S.service,
+                appointment_date: dateInput.value,
+                appointment_time: S.time,
+                status: 'Pending',
+                tracking_token: trackingToken,
+                customer_id: user ? user.id : null
+            };
+
+            const { error } = await supabaseClient
                 .from('bookings')
-                .insert([{
-                    customer_name: name,
-                    phone: phone,
-                    barber: S.barber,
-                    service: S.service,
-                    appointment_date: dateInput.value,
-                    appointment_time: S.time,
-                    status: 'Pending',
-                    tracking_token: trackingToken
-                }]);
+                .insert([bookingData]);
 
             if (error) throw error;
 
