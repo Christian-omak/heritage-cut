@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0e1a16">
+
+<title>My Account | Heritage Cut</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    min-height:100vh;
+    background:var(--bg);
+}
+
+.dashboard{
+    max-width:1150px;
+    margin:auto;
+    padding:150px 5vw 80px;
+}
+
+.dash-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-bottom:55px;
+}
+
+.eyebrow{
+    color:var(--brass);
+    font-size:11px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+}
+
+.dash-top h1{
+    font-size:clamp(42px,7vw,76px);
+    margin-top:15px;
+}
+
+.dash-top h1 em{color:var(--brass)}
+
+.signout{
+    background:transparent;
+    color:var(--bone);
+    border:1px solid var(--line);
+    padding:12px 22px;
+    font:500 12px Manrope,sans-serif;
+    letter-spacing:1px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.signout:hover{
+    border-color:var(--brass);
+    color:var(--brass);
+}
+
+.welcome{
+    padding:35px;
+    background:linear-gradient(130deg,#1b3428,#102019);
+    border:1px solid rgba(201,163,91,.25);
+    margin-bottom:35px;
+}
+
+.welcome small{
+    color:var(--brass);
+    letter-spacing:2px;
+    font-size:11px;
+}
+
+.welcome h2{
+    font-size:clamp(30px,5vw,48px);
+    margin:15px 0 10px;
+}
+
+.welcome p{
+    color:var(--mute);
+    font-size:14px;
+}
+
+.dash-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:25px;
+}
+
+.panel{
+    padding:30px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.015);
+}
+
+.panel h3{
+    font-size:29px;
+    margin-bottom:25px;
+}
+
+.panel h3 em{color:var(--brass)}
+
+.profile-form{
+    display:grid;
+    gap:20px;
+}
+
+.field label{
+    display:block;
+    color:var(--mute);
+    font-size:11px;
+    letter-spacing:1px;
+    margin-bottom:8px;
+}
+
+.field input,
+.field select{
+    width:100%;
+    padding:13px;
+    background:rgba(255,255,255,.025);
+    border:1px solid var(--line);
+    color:var(--bone);
+    font:400 14px Manrope,sans-serif;
+    outline:none;
+}
+
+.field input:focus,
+.field select:focus{
+    border-color:var(--brass);
+}
+
+.field select option{
+    background:var(--bg);
+    color:var(--bone);
+}
+
+.save-btn{
+    padding:14px 22px;
+    background:var(--brass);
+    color:var(--bg);
+    border:1px solid var(--brass);
+    font:700 11px Manrope,sans-serif;
+    letter-spacing:2px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.save-btn:hover{
+    background:transparent;
+    color:var(--brass);
+}
+
+.save-btn:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+.status-message{
+    min-height:20px;
+    color:var(--brass);
+    font-size:12px;
+}
+
+.booking-section{
+    margin-top:35px;
+}
+
+.booking-section h2{
+    font-size:clamp(35px,5vw,55px);
+    margin-bottom:30px;
+}
+
+.booking-section h2 em{color:var(--brass)}
+
+.booking-list{
+    display:grid;
+    gap:15px;
+}
+
+.booking-card{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+    padding:24px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.015);
+}
+
+.booking-card h3{
+    font-size:24px;
+    margin-bottom:8px;
+}
+
+.booking-card p{
+    color:var(--mute);
+    font-size:13px;
+    margin-top:4px;
+}
+
+.booking-status{
+    padding:7px 12px;
+    font-size:10px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    border:1px solid var(--line);
+}
+
+.booking-status.pending{color:var(--brass)}
+.booking-status.confirmed{color:#76d69b}
+.booking-status.cancelled{color:#ed7777}
+
+.empty-state{
+    padding:35px;
+    text-align:center;
+    border:1px dashed var(--line);
+    color:var(--mute);
+    font-size:14px;
+}
+
+.empty-state a{
+    display:inline-block;
+    margin-top:15px;
+    color:var(--brass);
+    border-bottom:1px solid var(--brass);
+}
+
+.loading{
+    color:var(--mute);
+    font-size:13px;
+    padding:20px 0;
+}
+
+.back-home{
+    display:inline-block;
+    margin-top:40px;
+    color:var(--brass);
+    font-size:13px;
+    border-bottom:1px solid var(--brass);
+}
+
+@media(max-width:750px){
+    .dashboard{padding-top:120px}
+    .dash-grid{grid-template-columns:1fr}
+    .panel{padding:23px}
+    .welcome{padding:25px}
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+    <a href="index.html" class="logo">HERITAGE <i>CUT</i></a>
+
+    <a href="index.html" class="btn">BOOK AN APPOINTMENT</a>
+</nav>
+
+<main class="dashboard">
+
+    <div class="dash-top">
+        <div>
+            <span class="eyebrow">HERITAGE CUT / MEMBERS AREA</span>
+            <h1>My <em>Account.</em></h1>
+        </div>
+
+        <button class="signout" id="signOutBtn">SIGN OUT ↗</button>
+    </div>
+
+    <section class="welcome">
+        <small>WELCOME BACK</small>
+        <h2 id="welcomeName">Loading...</h2>
+        <p>Manage your profile and keep track of your appointments.</p>
+    </section>
+
+    <div class="dash-grid">
+
+        <section class="panel">
+            <h3>Personal <em>Details.</em></h3>
+
+            <form class="profile-form" id="profileForm">
+
+                <div class="field">
+                    <label>FULL NAME</label>
+                    <input type="text" id="fullName" required>
+                </div>
+
+                <div class="field">
+                    <label>PHONE NUMBER</label>
+                    <input type="tel" id="phone" placeholder="Your phone number">
+                </div>
+
+                <div class="field">
+                    <label>EMAIL ADDRESS</label>
+                    <input type="email" id="email" disabled>
+                </div>
+
+                <button class="save-btn" id="saveProfile" type="submit">
+                    SAVE CHANGES
+                </button>
+
+                <p class="status-message" id="profileMessage"></p>
+
+            </form>
+        </section>
+
+        <section class="panel">
+            <h3>Your <em>Preferences.</em></h3>
+
+            <form class="profile-form" id="preferencesForm">
+
+                <div class="field">
+                    <label>PREFERRED BARBER</label>
+                    <select id="preferredBarber">
+                        <option value="">No preference</option>
+                        <option value="Maher">Maher</option>
+                        <option value="Najem">Najem</option>
+                        <option value="Majed">Majed</option>
+                        <option value="Any barber">Any barber</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>PREFERRED SERVICE</label>
+                    <select id="preferredService">
+                        <option value="">No preference</option>
+                        <option value="Haircut">Haircut</option>
+                        <option value="Beard">Beard</option>
+                        <option value="Haircut + Beard">Haircut + Beard</option>
+                    </select>
+                </div>
+
+                <button class="save-btn" id="savePreferences" type="submit">
+                    SAVE PREFERENCES
+                </button>
+
+                <p class="status-message" id="preferencesMessage"></p>
+
+            </form>
+        </section>
+
+    </div>
+
+    <section class="booking-section">
+        <h2>Your <em>Appointments.</em></h2>
+
+        <div class="booking-list" id="upcomingBookings">
+            <p class="loading">Loading your appointments...</p>
+        </div>
+    </section>
+
+    <section class="booking-section">
+        <h2>Past <em>Appointments.</em></h2>
+
+        <div class="booking-list" id="pastBookings">
+            <p class="loading">Loading your history...</p>
+        </div>
+    </section>
+
+    <a href="index.html" class="back-home">← BACK TO HERITAGE CUT</a>
+
+</main>
+
+<script>
+const SUPABASE_URL = "https://zqkrnnllqznseezlxlyo.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_22sfkbflstpyAcPm-xDqsg_kmCISgOM";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+const $ = selector => document.querySelector(selector);
+
+let currentUser = null;
+
+function showMessage(element, message, isError = false){
+    element.textContent = message;
+    element.style.color = isError ? "#ed7777" : "#c9a35b";
+}
+
+function formatDate(date){
+    if(!date) return "Date unavailable";
+
+    const parsed = new Date(date + "T00:00:00");
+
+    return parsed.toLocaleDateString("en-US",{
+        weekday:"long",
+        year:"numeric",
+        month:"long",
+        day:"numeric"
+    });
+}
+
+function escapeHTML(value){
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+    })[character]);
+}
+
+async function loadProfile(){
+
+    const {data, error} = await supabaseClient
+        .from("customer_profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+    if(error){
+        throw error;
+    }
+
+    const profile = data || {};
+
+    const name =
+        profile.full_name ||
+        currentUser.user_metadata?.full_name ||
+        currentUser.email.split("@")[0];
+
+    $("#welcomeName").textContent = name;
+
+    $("#fullName").value = profile.full_name || "";
+    $("#phone").value = profile.phone || "";
+    $("#email").value = currentUser.email || "";
+
+    $("#preferredBarber").value = profile.preferred_barber || "";
+    $("#preferredService").value = profile.preferred_service || "";
+}
+
+async function saveProfile(event){
+
+    event.preventDefault();
+
+    const button = $("#saveProfile");
+    const message = $("#profileMessage");
+
+    button.disabled = true;
+    button.textContent = "SAVING...";
+
+    const updates = {
+        id:currentUser.id,
+        full_name:$("#fullName").value.trim(),
+        phone:$("#phone").value.trim(),
+        updated_at:new Date().toISOString()
+    };
+
+    try{
+
+        const {error} = await supabaseClient
+            .from("customer_profiles")
+            .upsert(updates,{onConflict:"id"});
+
+        if(error) throw error;
+
+        $("#welcomeName").textContent = updates.full_name || "Welcome back";
+
+        showMessage(message,"Your profile has been updated.");
+
+    }catch(error){
+
+        console.error(error);
+
+        showMessage(message,error.message || "Could not save your profile.",true);
+
+    }finally{
+
+        button.disabled = false;
+        button.textContent = "SAVE CHANGES";
+
+    }
+}
+
+async function savePreferences(event){
+
+    event.preventDefault();
+
+    const button = $("#savePreferences");
+    const message = $("#preferencesMessage");
+
+    button.disabled = true;
+    button.textContent = "SAVING...";
+
+    const updates = {
+        id:currentUser.id,
+        preferred_barber:$("#preferredBarber").value,
+        preferred_service:$("#preferredService").value,
+        updated_at:new Date().toISOString()
+    };
+
+    try{
+
+        const {error} = await supabaseClient
+            .from("customer_profiles")
+            .upsert(updates,{onConflict:"id"});
+
+        if(error) throw error;
+
+        showMessage(message,"Your preferences have been saved.");
+
+    }catch(error){
+
+        console.error(error);
+
+        showMessage(message,error.message || "Could not save preferences.",true);
+
+    }finally{
+
+        button.disabled = false;
+        button.textContent = "SAVE PREFERENCES";
+
+    }
+}
+
+function createBookingCard(booking){
+
+    const status = (booking.status || "Pending").toLowerCase();
+
+    return `
+        <article class="booking-card">
+
+            <div>
+                <h3>${escapeHTML(booking.service)}</h3>
+
+                <p>Barber: ${escapeHTML(booking.barber)}</p>
+
+                <p>${escapeHTML(formatDate(booking.appointment_date))}</p>
+
+                <p>Time: ${escapeHTML(booking.appointment_time)}</p>
+            </div>
+
+            <span class="booking-status ${escapeHTML(status)}">
+                ${escapeHTML(booking.status || "Pending")}
+            </span>
+
+        </article>
+    `;
+}
+
+async function loadBookings(){
+
+    const upcomingContainer = $("#upcomingBookings");
+    const pastContainer = $("#pastBookings");
+
+    const today = new Date();
+    const localToday = [
+        today.getFullYear(),
+        String(today.getMonth()+1).padStart(2,"0"),
+        String(today.getDate()).padStart(2,"0")
+    ].join("-");
+
+    const {data,error} = await supabaseClient
+        .from("bookings")
+        .select("id,service,barber,appointment_date,appointment_time,status")
+        .eq("customer_id",currentUser.id)
+        .order("appointment_date",{ascending:true});
+
+    if(error){
+        console.error(error);
+
+        upcomingContainer.innerHTML =
+            '<p class="empty-state">Unable to load your appointments. Please refresh the page.</p>';
+
+        pastContainer.innerHTML =
+            '<p class="empty-state">Unable to load your appointment history.</p>';
+
+        return;
+    }
+
+    const bookings = data || [];
+
+    const upcoming = bookings.filter(booking =>
+        booking.appointment_date >= localToday &&
+        booking.status !== "Cancelled"
+    );
+
+    const past = bookings.filter(booking =>
+        booking.appointment_date < localToday ||
+        booking.status === "Cancelled"
+    );
+
+    upcomingContainer.innerHTML = upcoming.length
+        ? upcoming.map(createBookingCard).join("")
+        : '<div class="empty-state">You have no upcoming appointments.<br><a href="index.html#booking">Book your next visit →</a></div>';
+
+    pastContainer.innerHTML = past.length
+        ? [...past].reverse().map(createBookingCard).join("")
+        : '<div class="empty-state">Your appointment history will appear here.</div>';
+}
+
+async function initializeDashboard(){
+
+    const {data,error} = await supabaseClient.auth.getSession();
+
+    if(error){
+        console.error(error);
+        window.location.replace("index.html");
+        return;
+    }
+
+    currentUser = data.session?.user;
+
+    if(!currentUser){
+        window.location.replace("index.html");
+        return;
+    }
+
+    try{
+
+        await loadProfile();
+        await loadBookings();
+
+    }catch(error){
+
+        console.error(error);
+
+        $("#welcomeName").textContent = "Welcome back";
+
+        $("#profileMessage").textContent =
+            "There was a problem loading your profile. Please refresh.";
+
+    }
+}
+
+$("#profileForm").addEventListener("submit",saveProfile);
+
+$("#preferencesForm").addEventListener("submit",savePreferences);
+
+$("#signOutBtn").addEventListener("click",async()=>{
+
+    const button = $("#signOutBtn");
+
+    button.disabled = true;
+    button.textContent = "SIGNING OUT...";
+
+    const {error} = await supabaseClient.auth.signOut();
+
+    if(error){
+        console.error(error);
+        button.disabled = false;
+        button.textContent = "SIGN OUT ↗";
+        alert("Could not sign out. Please try again.");
+        return;
+    }
+
+    window.location.replace("index.html");
+
+});
+
+initializeDashboard();
+</script>
+
+</body>
+</html>
