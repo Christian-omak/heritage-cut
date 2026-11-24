@@ -1102,11 +1102,19 @@ async function updateBooking(id, action, button) {
                 duration_minutes: getDuration(current.service)
             };
 
-        } else if (action === 'cancel') {
-            updates = { status: 'Cancelled' };
-        } else {
-            return;
-        }
+      } else if (action === 'cancel') {
+    updates = { status: 'Cancelled' };
+
+} else if (action === 'complete') {
+    if (current.status !== 'Confirmed') {
+        throw new Error('Only confirmed appointments can be completed.');
+    }
+
+    updates = { status: 'Completed' };
+
+} else {
+    return;
+}
 
         const { error } = await db
             .from('bookings')
