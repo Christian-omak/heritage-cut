@@ -1069,7 +1069,13 @@ if (bookingButton) {
         const phone = $('#bp').value.trim();
         const message = $('#bm');
 
-        if (!S.barber || !S.service || !S.time || !dateInput.value) {
+        if (!supabaseClient) {
+            message.textContent =
+                'Something went wrong. Please try again later.';
+            return;
+        }
+
+        if (!S.barber || !S.service || !S.time || !dateInput?.value) {
             message.textContent =
                 'Please choose a barber, service, date and time first.';
             return;
@@ -1080,16 +1086,61 @@ if (bookingButton) {
                 'Please add your name and a valid phone number.';
             return;
         }
-// Get the currently signed-in customer, if any.
-const { data: userData, error: userError } =
-    await supabaseClient.auth.getUser();
 
-if (userError) throw userError;
+        bookingButton.disabled = true;
+        bookingButton.textContent = 'Checking availability...';
 
-const user = userData.user;
+        let redirecting = false;
+
+        try {
+            // Check availability again before submitting.
+            const latestBookings = await getConfirmedBookings(
+                dateInput.value
+            );
+
+            if (!isTimeAvailable(S.time, latestBookings)) {
+                message.textContent =
+                    'Sorry! This time has just been booked. Please choose another time.';
+
+                await createTimeSlots();
+                return;
+            }
+
+            bookingButton.textContent = 'Submitting...';
+
+            // Generate a private booking tracking token.
+            const trackingToken = generateTrackingToken();
+
+            // Get the current session safely.
+            // Guests are allowed to continue without a session.
+            const { data: sessionData, error: sessionError } =
+                await supabaseClient.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            const user = sessionData.session?.user || null;
+
+            // Prepare booking information.
+            const bookingData = {
+                customer_name: name,
+                phone: phone,
+                barber: S.barber,
+                service: S.service,
+                appointment_date: dateInput.value,
+                appointment_time: S.time,
+                status: 'Pending',
+                tracking_token: trackingToken,
+                customer_id: user ? user.id : null
+            };
+
+            // Save booking to Supabase.
+            const { error } = await supabaseClient
+                .from('bookings')
+                .insert([bookingData]);
 
             if (error) throw error;
 
+            // Booking successfully saved.
             redirecting = true;
             bookingButton.textContent = 'Opening your booking...';
 
@@ -1100,7 +1151,9 @@ const user = userData.user;
             console.error('Booking error:', error);
 
             message.textContent =
-                'Could not save your booking. Please try again.';
+                error.message
+                    ? `Could not save your booking: ${error.message}`
+                    : 'Could not save your booking. Please try again.';
 
         } finally {
             if (!redirecting) {
