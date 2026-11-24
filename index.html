@@ -51,8 +51,11 @@
 <div id="cur"></div>
 <div id="pg"></div>
 
+<!-- NAVIGATION -->
+
 <nav id="nav">
     <a class="logo" href="#top">Heritage<i> Cut</i></a>
+
     <ul>
         <li><a href="#about">The Shop</a></li>
         <li><a href="#artists">Artists</a></li>
@@ -60,31 +63,190 @@
         <li><a href="#book">Book</a></li>
         <li><a href="#visit">Visit</a></li>
     </ul>
+
+    <div class="account-actions">
+        <button class="account-login" id="openLogin" type="button">
+            Sign in
+        </button>
+
+        <button class="account-register" id="openRegister" type="button">
+            Create account
+        </button>
+
+        <a href="customer-dashboard.html" id="accountDashboard" hidden>
+            My account
+        </a>
+    </div>
+
     <a class="btn" href="#book">Book now</a>
 </nav>
 
+
+<!-- CUSTOMER AUTHENTICATION MODAL -->
+
+<div class="auth-overlay" id="authOverlay" hidden>
+
+    <div class="auth-modal">
+
+        <button class="auth-close" id="closeAuth" type="button" aria-label="Close">
+            &times;
+        </button>
+
+        <div class="auth-heading">
+            <span class="auth-eyebrow">HERITAGE CUT</span>
+            <h2 id="authTitle">Welcome <em>back.</em></h2>
+            <p id="authDescription">
+                Sign in to manage your appointments and preferences.
+            </p>
+        </div>
+
+        <div class="auth-tabs">
+            <button type="button" id="loginTab" class="active">
+                Sign in
+            </button>
+
+            <button type="button" id="registerTab">
+                Create account
+            </button>
+        </div>
+
+        <!-- SIGN IN FORM -->
+
+        <form id="loginForm" class="auth-form">
+
+            <div class="auth-field">
+                <label for="loginEmail">Email address</label>
+                <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="loginPassword">Password</label>
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Your password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="auth-submit">
+                Sign in
+            </button>
+
+        </form>
+
+
+        <!-- REGISTRATION FORM -->
+
+        <form id="registerForm" class="auth-form" hidden>
+
+            <div class="auth-field">
+                <label for="registerName">Full name</label>
+                <input
+                    type="text"
+                    id="registerName"
+                    placeholder="Your full name"
+                    autocomplete="name"
+                    required
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="registerPhone">Phone number</label>
+                <input
+                    type="tel"
+                    id="registerPhone"
+                    placeholder="+961..."
+                    autocomplete="tel"
+                    required
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="registerEmail">Email address</label>
+                <input
+                    type="email"
+                    id="registerEmail"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <div class="auth-field">
+                <label for="registerPassword">Create password</label>
+                <input
+                    type="password"
+                    id="registerPassword"
+                    placeholder="At least 8 characters"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="auth-submit">
+                Create my account
+            </button>
+
+            <p class="auth-note">
+                You'll receive an email to verify your account.
+            </p>
+
+        </form>
+
+        <p id="authMessage" class="auth-message" aria-live="polite"></p>
+
+        <div class="auth-footer">
+            Your experience. Your appointments. All in one place.
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- HERO -->
+
 <header class="hero" id="top">
     <div class="ribbon"></div>
+
     <h1>
         <span><b>Heritage</b></span>
         <span><b>Cut</b></span>
     </h1>
+
     <div class="row fade">
         <p>A barbershop in Beit El Chaar where every cut is measured, finished by hand and built to last until your next visit.</p>
         <a class="btn" href="#book">Book your chair</a>
     </div>
 </header>
 
+
+<!-- MARQUEE -->
+
 <div class="mq">
     <div id="mq"></div>
 </div>
 
+
+<!-- ABOUT -->
+
 <section class="about" id="about">
+
     <div class="rv">
         <h2>Rooted in the craft. <em>Sharp</em> for today.</h2>
     </div>
 
     <div class="rv">
+
         <p>Heritage Cut is built on the old barbershop idea: you sit down, you are heard, and you leave looking like yourself on your best day. Clean lines, precise fades and a calm room make the difference clients keep coming back for.</p>
 
         <div class="stats">
@@ -92,6 +254,7 @@
                 <b data-n="5.0">0</b>
                 <small>Google rating</small>
             </div>
+
             <div>
                 <b data-n="97">0</b>
                 <small>Client reviews</small>
@@ -104,10 +267,16 @@
             <small id="rn"></small>
             <div class="dots" id="rd"></div>
         </div>
+
     </div>
+
 </section>
 
+
+<!-- ARTISTS -->
+
 <section class="art" id="artists">
+
     <h2 class="rv">The Artists</h2>
     <p class="rv">Masters of their craft. Each with a story, each with a style.</p>
 
@@ -138,49 +307,70 @@
         </article>
 
     </div>
+
 </section>
 
+
+<!-- SERVICES -->
+
 <section id="services">
+
     <h2 class="rv">What we <em>do</em></h2>
 
     <ul class="svc rv">
+
         <li>
             <h3>Signature Haircut</h3>
             <p>Consultation, precision cut and a clean finish tailored to your face and hair.</p>
         </li>
+
         <li>
             <h3>Fades and Tapers</h3>
             <p>Seamless blends from skin to length, sharpened to the line.</p>
         </li>
+
         <li>
             <h3>Beard Sculpting</h3>
             <p>Shaped, edged and balanced so the beard fits the cut.</p>
         </li>
+
         <li>
             <h3>Cut and Beard</h3>
             <p>The full reset in one chair.</p>
         </li>
+
     </ul>
+
 </section>
 
+
+<!-- VISIT -->
+
 <section class="visit" id="visit">
+
     <div class="rv">
+
         <h2>Visit the <em>shop</em></h2>
 
         <dl>
+
             <div>
                 <dt>Location</dt>
                 <dd>Beit El Chaar<br><span style="font-size:.6em;opacity:.7">Plus code WJGF+7G3</span></dd>
             </div>
+
             <div>
                 <dt>Hours</dt>
                 <dd>Open daily, closes 8 PM</dd>
             </div>
+
             <div>
                 <dt>Phone</dt>
                 <dd><a href="tel:+96176105831">76 105 831</a></dd>
             </div>
+
         </dl>
+
     </div>
 
     <div class="map rv">
@@ -190,9 +380,14 @@
             <a class="btn" href="https://www.google.com/maps/search/?api=1&query=WJGF%2B7G3%20Beit%20El%20Chaar" target="_blank" rel="noopener">Get directions</a>
         </div>
     </div>
+
 </section>
 
+
+<!-- BOOKING -->
+
 <section class="book" id="book">
+
     <h2 class="rv">Book your <em>chair</em></h2>
 
     <div class="bf rv">
@@ -218,6 +413,7 @@
         </div>
 
         <div class="two">
+
             <div class="fg">
                 <label for="bn">Your name</label>
                 <input id="bn" autocomplete="name">
@@ -227,26 +423,40 @@
                 <label for="bp">Phone number</label>
                 <input id="bp" type="tel" autocomplete="tel">
             </div>
+
         </div>
 
         <p id="bm" class="msg">Pick a barber, service, date and time.</p>
 
-        <button class="btn" id="bg" type="button">Send booking request</button>
-
-    
+        <button class="btn" id="bg" type="button">
+            Send booking request
+        </button>
 
     </div>
+
 </section>
 
+
+<!-- CTA -->
+
 <section class="cta">
+
     <h2 class="rv">Your chair is <em>waiting</em>.</h2>
+
     <a class="btn" href="#book">Book an appointment</a>
+
 </section>
+
+
+<!-- FOOTER -->
 
 <footer>
     <span>© 2026 Heritage Cut, Beit El Chaar</span>
     <span>Open until 8 PM</span>
 </footer>
+
+
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
