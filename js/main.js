@@ -1080,60 +1080,13 @@ if (bookingButton) {
                 'Please add your name and a valid phone number.';
             return;
         }
+// Get the currently signed-in customer, if any.
+const { data: userData, error: userError } =
+    await supabaseClient.auth.getUser();
 
-        if (!supabaseClient) {
-            message.textContent =
-                'Something went wrong. Please try again later.';
-            return;
-        }
+if (userError) throw userError;
 
-        bookingButton.disabled = true;
-        bookingButton.textContent = 'Checking availability...';
-
-        let redirecting = false;
-
-        try {
-            const latestBookings = await getConfirmedBookings(
-                dateInput.value
-            );
-
-            if (!isTimeAvailable(S.time, latestBookings)) {
-                message.textContent =
-                    'Sorry! This time has just been booked. Please choose another time.';
-
-                await createTimeSlots();
-                return;
-            }
-
-            bookingButton.textContent = 'Submitting...';
-
-            const trackingToken = generateTrackingToken();
-
-            // Get the currently signed-in customer, if any.
-            const { data: userData, error: userError } =
-                await supabaseClient.auth.getUser();
-
-            if (userError) throw userError;
-
-            const user = userData.user;
-
-            // Signed-in customers must include their own customer_id.
-            // Guests keep customer_id as null.
-            const bookingData = {
-                customer_name: name,
-                phone: phone,
-                barber: S.barber,
-                service: S.service,
-                appointment_date: dateInput.value,
-                appointment_time: S.time,
-                status: 'Pending',
-                tracking_token: trackingToken,
-                customer_id: user ? user.id : null
-            };
-
-            const { error } = await supabaseClient
-                .from('bookings')
-                .insert([bookingData]);
+const user = userData.user;
 
             if (error) throw error;
 
